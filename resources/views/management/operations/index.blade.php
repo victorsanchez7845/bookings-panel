@@ -197,6 +197,7 @@
                 </div>
             @endif
 
+            <div style="overflow-x: auto;">
             <table id="dataManagementOperations" class="table table-rendering dt-table-hover" style="width:100%" data-button='<?=json_encode($buttons)?>'>
                 <thead>
                     <tr>
@@ -218,6 +219,7 @@
                         <th class="text-center">ESTATUS DE RESERVACIÓN</th><!-- ESTATUS DE RESERVACION -->
                         <th class="text-center">PAGO</th>
                         <th class="text-center">TOTAL</th>
+                        <th class="text-center">BALANCE</th>
                         <th class="text-center">MÉTODOS DE PAGO</th>
                     </tr>
                 </thead>
@@ -467,7 +469,10 @@
                                 <td class="text-center"><button type="button" class="btn btn-{{ auth()->user()->classStatusBooking($value->reservation_status) }}">{{ auth()->user()->statusBooking($value->reservation_status) }}</button></td>
                                 <td class="text-center" <?=auth()->user()->classStatusPayment($value)?>>{{ auth()->user()->statusPayment($value->payment_status) }}</td>
                                 <td class="text-center" >
-                                    {{ number_format( ( $value->total_balance > 0 ? $value->total_balance : $value->total_sales ) ,2) }} {{ $value->currency }}
+                                    {{ number_format( $value->total_sales ,2) }} {{ $value->currency }}
+                                </td>
+                                <td class="text-center" >
+                                    {{ number_format( $value->total_balance ,2) }} {{ $value->currency }}
                                 </td>
                                 <td class="text-center">
                                     {{ $value->payment_type_name }}
@@ -477,6 +482,7 @@
                     @endif
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 
