@@ -82,14 +82,6 @@ class SalesRepository
             $havingConditions[] = ' is_today != 0 ';
         }
 
-        //DUPLICADAS
-        if(!isset( $request->is_duplicated )){
-            $query .= " AND rez.is_duplicated = 0 ";
-        }
-        if(isset( $request->is_duplicated )){
-            $query .= " AND rez.is_duplicated IN (1,0) ";
-        }
-
         //VER AGENCIAS
         if(!isset( $request->is_agency )){
             $query .= " AND site.type_site != 'AGENCY' ";
@@ -130,6 +122,10 @@ class SalesRepository
         //ESTATUS DE RESERVACIÓN
         if(isset( $request->reservation_status ) && !empty( $request->reservation_status )){
             $params = $this->parseArrayQuery($request->reservation_status,"single");
+
+            if( in_array('DUPLICATED', $request->reservation_status) ) {
+                $query .= " AND rez.is_duplicated IN (1,0) ";
+            }
             $havingConditions[] = " reservation_status IN (".$params.") ";
         }
 
