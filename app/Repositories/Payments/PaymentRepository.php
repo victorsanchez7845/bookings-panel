@@ -125,6 +125,7 @@ class PaymentRepository
         $reference = trim($request->reference);
 
         $payment_with_same_reference_exists = Payment::where('id', '!=', $payment->id)
+        ->where('reservation_id', $request->reservation_id)
         ->where('payment_method', $request->payment_method)
         ->where('reference', $reference)
         ->exists();
