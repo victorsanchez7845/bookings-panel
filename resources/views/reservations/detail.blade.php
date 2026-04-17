@@ -1035,7 +1035,7 @@
                                             <td>{{ $payment->description }}</td>
                                             <td class="text-end">{{ number_format($payment->total) }}</td>
                                             <td class="text-center">{{ $payment->currency }}</td>
-                                            <td class="text-end">{{ number_format($payment->exchange_rate) }}</td>
+                                            <td class="text-end">{{ number_format($payment->exchange_rate, 2) }}</td>
                                             <td class="text-start">{{ $payment->reference }}</td>
                                             <td class="text-start">{{ $payment->category }}</td>
                                             <td class="text-center">{{ $payment->created_at }}</td>

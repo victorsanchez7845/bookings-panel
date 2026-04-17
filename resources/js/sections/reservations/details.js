@@ -1403,12 +1403,18 @@ $(function() {
         $("#btn_new_sale").prop('disabled', false);
     });
 
+    $('#servicePaymentsModal').on('shown.bs.modal', function () {
+        updateFillPendingButton();
+    });
+
     $('#servicePaymentsModal').on('hidden.bs.modal', function () {
         $("#frm_new_payment")[0].reset();
         $("#payment_id").val('');
         $("#type_form_pay").val(1);
         $("#btn_new_payment").prop('disabled', false);
         $('#servicePaymentsExchangeModal').prop('readonly', true);
+        editPaymentConverted = 0;
+        $("#btn_fill_pending_payment").hide();
     });
 });
 
@@ -1639,11 +1645,17 @@ function getPayment(id){
             $("#servicePaymentsMessageConciliationModal").val(data.conciliation_comment);
             $("#btn_new_payment").prop('disabled', false);
 
+            const t = parseFloat(data.total) || 0;
+            const r = parseFloat(data.exchange_rate) || 1;
+            editPaymentConverted = data.operation === 'division' ? t / r : t * r;
+
             if (rez_currency === data.currency) {
                 $('#servicePaymentsExchangeModal').prop('readonly', true);
             } else {
                 $('#servicePaymentsExchangeModal').prop('readonly', false);
             }
+
+            updateFillPendingButton();
         },
         error: function (data) {
             console.log(data);
@@ -1669,6 +1681,32 @@ function deletePayment(id){
 }
 /* ===== End Events Payments Settings ===== */
 
+let editPaymentConverted = 0;
+
+function getEffectivePending() {
+    const isEdit = $("#type_form_pay").val() == 2;
+    return (parseFloat(rez_pending) || 0) + (isEdit ? editPaymentConverted : 0);
+}
+
+function updateFillPendingButton() {
+    const pending   = getEffectivePending();
+    const total     = parseFloat($("#servicePaymentsTotalModal").val()) || 0;
+    const currency  = $("#servicePaymentsCurrencyModalPayment").val();
+    const isVisible = pending > 0 && currency !== rez_currency && total > 0;
+    $("#btn_fill_pending_payment").toggle(isVisible);
+}
+
+$("#btn_fill_pending_payment").on('click', function(){
+    const pending = getEffectivePending();
+    const total   = parseFloat($("#servicePaymentsTotalModal").val());
+    const rate    = rez_currency === 'USD' ? total / pending : pending / total;
+    $("#servicePaymentsExchangeModal").val(rate.toFixed(6)).prop('readonly', false);
+});
+
+$("#servicePaymentsTotalModal").on('input', function(){
+    updateFillPendingButton();
+});
+
 $("#servicePaymentsCurrencyModalPayment").on('change', function(){
     let currency = $(this).val();
     let reservation_id = $("#reserv_id_pay").val();
@@ -1687,11 +1725,13 @@ $("#servicePaymentsCurrencyModalPayment").on('change', function(){
             $("#servicePaymentsExchangeModal").val(data.exchange_rate);
             $("#operation_pay").val(data.operation);
             $("#btn_new_payment").prop('disabled', false);
+            updateFillPendingButton();
         },
         error: function (data) {
             console.log(data);
         }
     });
+    updateFillPendingButton();
 });
 
 $("#btn_edit_item").on('click', function(){

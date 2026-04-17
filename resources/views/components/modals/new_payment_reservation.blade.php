@@ -36,7 +36,10 @@
                             </select>
                         </div>
                         <div class="col-sm-12 col-md-6">
-                            <label class="form-label" for="servicePaymentsExchangeModal">Tipo de cambio</label>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label mb-0" for="servicePaymentsExchangeModal">Tipo de cambio</label>
+                                <button type="button" class="btn btn-sm btn-outline-success" id="btn_fill_pending_payment" style="display:none;" title="Calcular tipo de cambio para cubrir el pendiente">Cuadrar tipo de cambio al balance</button>
+                            </div>
                             <input type="number" class="form-control mb-2" id="servicePaymentsExchangeModal" name="exchange_rate" value="1.00" readonly>
                         </div>
                     </div>
