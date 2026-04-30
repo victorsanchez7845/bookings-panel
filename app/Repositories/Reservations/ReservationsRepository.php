@@ -1052,15 +1052,15 @@ class ReservationsRepository
         $reservation_item = ReservationsItem::where('reservation_id', $reservation_id)->first();
 
         if($reservation_item) {
-            if($reservation_item->op_one_preassignment && $reservation_item->op_two_preassignment) {
+            if($reservation_item->op_one_pickup && $reservation_item->op_two_pickup) {
                 if($reservation_item->op_one_operation_close && $reservation_item->op_two_operation_close) {
                     $allow_edit = false;
                 }
             }
-            else if($reservation_item->op_one_preassignment) {
+            else if($reservation_item->op_one_pickup) {
                 if($reservation_item->op_one_operation_close) $allow_edit = false;
             }
-            else if($reservation_item->op_two_preassignment) {
+            else if($reservation_item->op_two_pickup) {
                 if($reservation_item->op_two_operation_close) $allow_edit = false;
             }
         }
