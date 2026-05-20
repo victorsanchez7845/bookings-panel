@@ -2153,7 +2153,7 @@ if ( __send_confirmation_whatsapp != null ){
         navigator.clipboard.writeText(contenido).then(function() {
             // Notifica al usuario que el contenido se ha copiado
             // alert('Contenido copiado: ' + contenido);
-            let url = "https://api.whatsapp.com/send?phone=5219982127069&text=" + decodeURIComponent(contenido);
+            let url = "https://api.whatsapp.com/send?phone=529982942389&text=" + decodeURIComponent(contenido);
             // window.location.href = text;
             window.open(url, "_blank");
         }, function(err) {
