@@ -163,7 +163,7 @@ trait ApiTrait2
 
         $headers = array_merge($headers, $headers_merge);
 
-        $url = ( config('app.env') == 'local' ? 'https://api.caribbean-transfers.com' : 'https://api.caribbean-transfers.com' ).$end_point;
+        $url = ( config('app.env') == 'local' ? 'https://api.taxidominicana.com' : 'https://api.taxidominicana.com' ).$end_point;
         // $url = ( config('app.env') == 'local' ? 'https://transportation-api.up.railway.app' : 'https://transportation-api.up.railway.app' ).$end_point;
         $ch = curl_init($url);
 

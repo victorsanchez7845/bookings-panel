@@ -119,8 +119,8 @@ class ActionsRepository
         }
 
         try {
-            // $mensaje = ("https://api.caribbean-transfers.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&email=".$booking->client_email."&language=".$booking->language."");
-            // $html = file_get_contents("https://api.caribbean-transfers.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&email=".$booking->client_email."&language=".$booking->language."");
+            // $mensaje = ("https://api.taxidominicana.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&email=".$booking->client_email."&language=".$booking->language."");
+            // $html = file_get_contents("https://api.taxidominicana.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&email=".$booking->client_email."&language=".$booking->language."");
 
             // $dompdf = new Dompdf();
             // $dompdf->loadHtml($html);
@@ -146,7 +146,7 @@ class ActionsRepository
             // $linkWhatsapp = "https://wa.me/{$booking->client_phone}?text={$mensajeTexto}";         
 
             $telefono = $booking->client_phone; // Código de país + número sin espacios
-            $mensaje = urlencode("https://api.caribbean-transfers.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&language=".$booking->language."&email=".$booking->client_email."");
+            $mensaje = urlencode("https://api.taxidominicana.com/api/v1/mailing/reservation/viewQR?code=".$booking->items[0]->code."&language=".$booking->language."&email=".$booking->client_email."");
             $linkWhatsapp = "https://wa.me/$telefono?text=$mensaje";
 
             return response()->json([
@@ -1079,7 +1079,7 @@ class ActionsRepository
             "data" => NULL
         ];
 
-        $url = "https://api.caribbean-transfers.com/api/v1/reservation/send";
+        $url = "https://api.taxidominicana.com/api/v1/reservation/send";
 
         $params = array(
             'code' => $request['code'],

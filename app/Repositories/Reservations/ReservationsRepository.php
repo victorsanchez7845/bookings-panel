@@ -1035,7 +1035,7 @@ class ReservationsRepository
             "redirect" => 1
         ];
 
-        return 'https://api.caribbean-transfers.com/api/v1/reservation/payment/handler?'.http_build_query($data);        
+        return 'https://api.taxidominicana.com/api/v1/reservation/payment/handler?'.http_build_query($data);
     }
 
     public function follow_ups($request){
