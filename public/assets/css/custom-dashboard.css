@@ -1,0 +1,148 @@
+body {
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,.08), transparent 30%),
+        linear-gradient(135deg, #111 0%, #050505 100%) !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* contenedor principal */
+.main,
+.content,
+.wrapper {
+    background: transparent !important;
+}
+
+/* dashboard flotante */
+.content {
+    margin: 36px auto !important;
+    max-width: 1440px !important;
+    border-radius: 32px !important;
+    overflow: hidden !important;
+    background: #fff !important;
+    box-shadow: 0 35px 90px rgba(0,0,0,.35) !important;
+}
+
+/* navbar superior */
+.navbar,
+.header,
+.topbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #eef0f6 !important;
+    height: 82px !important;
+    box-shadow: none !important;
+}
+
+/* barra superior texto */
+.navbar *,
+.header *,
+.topbar * {
+    color: #111827 !important;
+}
+
+/* sidebar */
+.sidebar,
+.sidebar-content,
+.sidebar-wrapper {
+    background: #ffffff !important;
+    border-right: 1px solid #eef0f6 !important;
+    box-shadow: none !important;
+}
+
+/* logo */
+.sidebar-brand img,
+.navbar-brand img {
+    height: 42px !important;
+    width: auto !important;
+}
+
+/* links sidebar */
+.sidebar-link,
+.sidebar-item a {
+    border-radius: 14px !important;
+    margin: 8px 14px !important;
+    color: #5b4bb7 !important;
+    transition: .25s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-item.active .sidebar-link {
+    background: #f3f0ff !important;
+    color: #ff6b4a !important;
+}
+
+/* área interna */
+.main .content,
+.container-fluid {
+    background: #ffffff !important;
+    padding: 28px !important;
+}
+
+/* cards */
+.card {
+    border: 1px solid #eef0f6 !important;
+    border-radius: 22px !important;
+    box-shadow: 0 18px 45px rgba(20, 20, 43, .06) !important;
+    background: #ffffff !important;
+}
+
+/* títulos */
+h1, h2, h3, h4, h5,
+.card-title {
+    color: #111827 !important;
+    font-weight: 700 !important;
+}
+
+/* inputs / buscador */
+input,
+.form-control {
+    background: #f7f7fb !important;
+    border: 1px solid #ececf3 !important;
+    border-radius: 12px !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+}
+
+/* botones */
+.btn-primary,
+.btn-secondary,
+button {
+    border-radius: 12px !important;
+    background: #ff7355 !important;
+    border-color: #ff7355 !important;
+    color: #fff !important;
+    box-shadow: 0 12px 24px rgba(255,115,85,.25) !important;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+button:hover {
+    background: #ff5f3d !important;
+    border-color: #ff5f3d !important;
+}
+
+/* gráficas */
+.apexcharts-series path {
+    stroke: #ff5f3d !important;
+}
+
+.apexcharts-marker {
+    fill: #ff5f3d !important;
+}
+
+/* fondo suave dentro del dashboard */
+main,
+.main {
+    background:
+        radial-gradient(circle at 85% 90%, rgba(83,67,180,.12), transparent 34%),
+        radial-gradient(circle at 20% 20%, rgba(255,115,85,.10), transparent 25%),
+        #ffffff !important;
+}
+
+/* responsive */
+@media (max-width: 991px) {
+    .content {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+    }
+}
