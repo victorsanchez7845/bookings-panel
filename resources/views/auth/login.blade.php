@@ -33,8 +33,8 @@
 
         body{
             font-family:'Poppins',sans-serif;
-            overflow:hidden;
             background:#fff;
+            overflow:hidden;
         }
 
         .auth-container{
@@ -43,7 +43,7 @@
             grid-template-columns:1fr 1fr;
         }
 
-        /* LEFT */
+        /* LEFT SIDE */
 
         .login-left{
             background:#ffffff;
@@ -51,8 +51,6 @@
             justify-content:center;
             align-items:center;
             padding:60px 80px;
-            position:relative;
-            z-index:5;
         }
 
         .login-box{
@@ -123,138 +121,13 @@
             font-size:14px;
         }
 
-        /* RIGHT SIDE */
+        /* RIGHT SIDE IMAGE */
 
         .login-right{
-            position:relative;
-            overflow:hidden;
-            background:
-                radial-gradient(circle at 50% 50%, #111827 0%, #050816 55%, #02030a 100%);
-            isolation:isolate;
-        }
-
-        .login-right::before{
-            content:"";
-            position:absolute;
-            width:120%;
-            height:120%;
-            inset:-10%;
-            background:
-                conic-gradient(
-                    from 180deg,
-                    #fb5607,
-                    #ff006e,
-                    #8338ec,
-                    #3a86ff,
-                    #00f5d4,
-                    #fb5607
-                );
-
-            filter:blur(80px);
-            opacity:.75;
-            animation:cosmicSpin 18s linear infinite;
-        }
-
-        .login-right::after{
-            content:"";
-            position:absolute;
-            inset:0;
-            background:
-                radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 7%),
-                radial-gradient(circle at 70% 65%, rgba(255,255,255,.22), transparent 9%),
-                radial-gradient(circle at 50% 50%, transparent 0%, rgba(2,3,10,.55) 75%);
-            backdrop-filter:blur(40px) saturate(140%);
-            animation:liquidPulse 9s ease-in-out infinite alternate;
-        }
-
-        .orb{
-            position:absolute;
-            border-radius:50%;
-            mix-blend-mode:screen;
-            filter:blur(30px);
-            z-index:2;
-        }
-
-        .orb.one{
-            width:500px;
-            height:500px;
-            background:radial-gradient(circle, rgba(255,255,255,.25), transparent 65%);
-            top:5%;
-            left:10%;
-            animation:floatOne 16s ease-in-out infinite;
-        }
-
-        .orb.two{
-            width:380px;
-            height:380px;
-            background:radial-gradient(circle, rgba(0,245,212,.25), transparent 65%);
-            bottom:10%;
-            right:5%;
-            animation:floatTwo 18s ease-in-out infinite;
-        }
-
-        .orb.three{
-            width:300px;
-            height:300px;
-            background:radial-gradient(circle, rgba(255,0,110,.25), transparent 65%);
-            top:45%;
-            left:40%;
-            animation:floatThree 20s ease-in-out infinite;
-        }
-
-        .glass-lines{
-            position:absolute;
-            inset:0;
-            background-image:
-                linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-            background-size:70px 70px;
-            z-index:1;
-        }
-
-        @keyframes cosmicSpin{
-            from{
-                transform:rotate(0deg) scale(1.15);
-            }
-            to{
-                transform:rotate(360deg) scale(1.15);
-            }
-        }
-
-        @keyframes liquidPulse{
-            0%{
-                transform:scale(1);
-            }
-            100%{
-                transform:scale(1.08);
-            }
-        }
-
-        @keyframes floatOne{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(60px,-40px) scale(1.15);
-            }
-        }
-
-        @keyframes floatTwo{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(-50px,50px) scale(1.12);
-            }
-        }
-
-        @keyframes floatThree{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(40px,-60px) scale(1.2);
-            }
+            background-image:url('/assets/img/login-bg.jpg');
+            background-size:cover;
+            background-position:center;
+            background-repeat:no-repeat;
         }
 
         /* MOBILE */
@@ -383,17 +256,9 @@
 
         </div>
 
-        <!-- RIGHT -->
+        <!-- RIGHT IMAGE -->
 
-        <div class="login-right">
-
-            <div class="glass-lines"></div>
-
-            <span class="orb one"></span>
-            <span class="orb two"></span>
-            <span class="orb three"></span>
-
-        </div>
+        <div class="login-right"></div>
 
     </div>
 
