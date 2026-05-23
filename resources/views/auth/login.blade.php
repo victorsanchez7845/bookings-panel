@@ -111,12 +111,46 @@
         
         /* RIGHT SIDE */
         
-        .login-right{
-            background-image:url('/assets/img/login-bg.jpg');
-            background-size:cover;
-            background-position:center;
-            background-repeat:no-repeat;
-        }
+.login-right{
+    position:relative;
+    overflow:hidden;
+    background:#050816;
+}
+
+.login-right::before,
+.login-right::after{
+    content:"";
+    position:absolute;
+    inset:-20%;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(251,86,7,.75), transparent 28%),
+        radial-gradient(circle at 80% 20%, rgba(0,180,255,.65), transparent 30%),
+        radial-gradient(circle at 50% 80%, rgba(255,0,150,.55), transparent 32%),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,.18), transparent 22%);
+    filter:blur(45px);
+    animation: auroraMove 12s ease-in-out infinite alternate;
+}
+
+.login-right::after{
+    background:
+        radial-gradient(circle at 70% 30%, rgba(255,255,255,.22), transparent 18%),
+        radial-gradient(circle at 30% 70%, rgba(0,120,255,.7), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(251,86,7,.5), transparent 30%);
+    animation-duration:18s;
+    mix-blend-mode:screen;
+}
+
+@keyframes auroraMove{
+    0%{
+        transform:translate3d(-6%, -4%, 0) scale(1);
+    }
+    50%{
+        transform:translate3d(5%, 6%, 0) scale(1.12) rotate(8deg);
+    }
+    100%{
+        transform:translate3d(-2%, 8%, 0) scale(1.05) rotate(-6deg);
+    }
+}
         
         /* MOBILE */
         
@@ -149,7 +183,7 @@
     <div class="login-left">
 
         <div class="login-logo">
-            <img src="https://caribbean-transfers.com/assets/img/logo.svg"
+            <img src="/assets/img/logo.svg"
                  alt="Caribbean Transfers">
         </div>
 
