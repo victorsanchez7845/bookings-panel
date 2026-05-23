@@ -9,7 +9,7 @@
 
     <title>Bookings</title>
 
-    <meta name="description" content="Caribbean Transfers | Login">
+    <meta name="description" content="Shuttles Central | Login">
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
 
@@ -33,8 +33,8 @@
 
         body{
             font-family:'Poppins',sans-serif;
-            overflow:hidden;
             background:#fff;
+            overflow:hidden;
         }
 
         .auth-container{
@@ -43,7 +43,7 @@
             grid-template-columns:1fr 1fr;
         }
 
-        /* LEFT */
+        /* LEFT SIDE */
 
         .login-left{
             background:#ffffff;
@@ -51,8 +51,6 @@
             justify-content:center;
             align-items:center;
             padding:60px 80px;
-            position:relative;
-            z-index:5;
         }
 
         .login-box{
@@ -123,137 +121,63 @@
             font-size:14px;
         }
 
-        /* RIGHT SIDE */
+        /* RIGHT SIDE AURORA */
 
         .login-right{
             position:relative;
             overflow:hidden;
-            background:
-                radial-gradient(circle at 50% 50%, #111827 0%, #050816 55%, #02030a 100%);
-            isolation:isolate;
+            background:#050816;
         }
 
-        .login-right::before{
-            content:"";
-            position:absolute;
-            width:120%;
-            height:120%;
-            inset:-10%;
-            background:
-                conic-gradient(
-                    from 180deg,
-                    #fb5607,
-                    #ff006e,
-                    #8338ec,
-                    #3a86ff,
-                    #00f5d4,
-                    #fb5607
-                );
-
-            filter:blur(80px);
-            opacity:.75;
-            animation:cosmicSpin 18s linear infinite;
-        }
-
+        .login-right::before,
         .login-right::after{
             content:"";
             position:absolute;
-            inset:0;
+            inset:-20%;
+
             background:
-                radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 7%),
-                radial-gradient(circle at 70% 65%, rgba(255,255,255,.22), transparent 9%),
-                radial-gradient(circle at 50% 50%, transparent 0%, rgba(2,3,10,.55) 75%);
-            backdrop-filter:blur(40px) saturate(140%);
-            animation:liquidPulse 9s ease-in-out infinite alternate;
+                radial-gradient(circle at 20% 30%, rgba(251,86,7,.75), transparent 28%),
+                radial-gradient(circle at 80% 20%, rgba(0,180,255,.65), transparent 30%),
+                radial-gradient(circle at 50% 80%, rgba(255,0,150,.55), transparent 32%),
+                radial-gradient(circle at 70% 60%, rgba(255,255,255,.18), transparent 22%);
+
+            filter:blur(45px);
+
+            animation:auroraMove 12s ease-in-out infinite alternate;
         }
 
-        .orb{
-            position:absolute;
-            border-radius:50%;
+        .login-right::after{
+
+            background:
+                radial-gradient(circle at 70% 30%, rgba(255,255,255,.22), transparent 18%),
+                radial-gradient(circle at 30% 70%, rgba(0,120,255,.7), transparent 28%),
+                radial-gradient(circle at 80% 80%, rgba(251,86,7,.5), transparent 30%);
+
+            animation-duration:18s;
+
             mix-blend-mode:screen;
-            filter:blur(30px);
-            z-index:2;
         }
 
-        .orb.one{
-            width:500px;
-            height:500px;
-            background:radial-gradient(circle, rgba(255,255,255,.25), transparent 65%);
-            top:5%;
-            left:10%;
-            animation:floatOne 16s ease-in-out infinite;
-        }
+        @keyframes auroraMove{
 
-        .orb.two{
-            width:380px;
-            height:380px;
-            background:radial-gradient(circle, rgba(0,245,212,.25), transparent 65%);
-            bottom:10%;
-            right:5%;
-            animation:floatTwo 18s ease-in-out infinite;
-        }
-
-        .orb.three{
-            width:300px;
-            height:300px;
-            background:radial-gradient(circle, rgba(255,0,110,.25), transparent 65%);
-            top:45%;
-            left:40%;
-            animation:floatThree 20s ease-in-out infinite;
-        }
-
-        .glass-lines{
-            position:absolute;
-            inset:0;
-            background-image:
-                linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-            background-size:70px 70px;
-            z-index:1;
-        }
-
-        @keyframes cosmicSpin{
-            from{
-                transform:rotate(0deg) scale(1.15);
-            }
-            to{
-                transform:rotate(360deg) scale(1.15);
-            }
-        }
-
-        @keyframes liquidPulse{
             0%{
-                transform:scale(1);
+                transform:
+                    translate3d(-6%, -4%, 0)
+                    scale(1);
             }
+
+            50%{
+                transform:
+                    translate3d(5%, 6%, 0)
+                    scale(1.12)
+                    rotate(8deg);
+            }
+
             100%{
-                transform:scale(1.08);
-            }
-        }
-
-        @keyframes floatOne{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(60px,-40px) scale(1.15);
-            }
-        }
-
-        @keyframes floatTwo{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(-50px,50px) scale(1.12);
-            }
-        }
-
-        @keyframes floatThree{
-            0%,100%{
-                transform:translate(0,0) scale(1);
-            }
-            50%{
-                transform:translate(40px,-60px) scale(1.2);
+                transform:
+                    translate3d(-2%, 8%, 0)
+                    scale(1.05)
+                    rotate(-6deg);
             }
         }
 
@@ -297,8 +221,8 @@
             <div class="login-box">
 
                 <div class="login-logo">
-                    <img src="https://caribbean-transfers.com/assets/img/logo.svg"
-                        alt="Caribbean Transfers">
+                    <img src="https://icon-icons.com/images/icon-icons.svg"
+                        alt="Shuttles Central">
                 </div>
 
                 <div class="login-subtitle">
@@ -329,7 +253,7 @@
                             class="form-control"
                             type="email"
                             name="email"
-                            placeholder="contacto@caribbean-transfers.com"
+                            placeholder="contact@shuttlescentral.org"
                             value="{{ old('email') }}"
                             autocomplete="username">
 
@@ -385,15 +309,7 @@
 
         <!-- RIGHT -->
 
-        <div class="login-right">
-
-            <div class="glass-lines"></div>
-
-            <span class="orb one"></span>
-            <span class="orb two"></span>
-            <span class="orb three"></span>
-
-        </div>
+        <div class="login-right"></div>
 
     </div>
 
