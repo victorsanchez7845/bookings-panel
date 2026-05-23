@@ -159,7 +159,7 @@ let setup = {
           },
         };  
         $.ajax({
-          url: 'https://api.caribbean-transfers.com/api/v1/hotels/add',
+          url: 'https://api.taxidominicana.com/api/v1/hotels/add',
           type: 'POST',
           data: item,
           beforeSend: function() {

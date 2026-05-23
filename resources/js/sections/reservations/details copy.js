@@ -741,7 +741,7 @@ function initMap() {
 }
 
 function sendMail(code,mail,languague){
-    var url = "https://api.caribbean-transfers.com/api/v1/reservation/send?code="+code+"&email="+mail+"&language="+languague+"&type=new";
+    var url = "https://api.taxidominicana.com/api/v1/reservation/send?code="+code+"&email="+mail+"&language="+languague+"&type=new";
     $.ajax({
         url: url,
         type: 'GET',
