@@ -21,111 +21,214 @@
     <link href="{{ mix('/assets/css/panel/panel2.min.css') }}" rel="stylesheet" >
     <link href="{{ mix('/assets/css/panel/panel.min.css') }}"rel="preload" as="style" >
     <link href="{{ mix('/assets/css/panel/panel.min.css') }}"rel="stylesheet" >	
-	<style>
-		body{
-			background-color: #16161d;
-			color: #ffffff;			
-		}
-
-		.auth-container{
-			height: 100vh;
-		}
-
-		.card{
-			background: #16161d;
-			border-radius: 8px;
-			display: grid;
-			gap: 20px;
-			grid-template-columns: 1fr;
-			max-width: 570px;
-			padding: 20px;
-			width: 100%;
-			border: 0;
-			color: #ffffff;	
-		}
-		.card-body {
-			padding: 0
-		}
-
-		.form-control{
-			color: #000000;
-		}
-		.form-group label, label{
-			color: #ffffff;
-		}
-		.btn, .btn:hover{
-			font-size: 14px;
-			background-color: #fb5607b8;
-			border-color: #fb5607b8;
-			box-shadow: none;
-		}
-	</style>
+        	<style>
+        
+        body{
+            margin:0;
+            font-family:'Poppins',sans-serif;
+            background:#fff;
+            overflow:hidden;
+        }
+        
+        .auth-container{
+            min-height:100vh;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+        }
+        
+        /* LEFT SIDE */
+        
+        .login-left{
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            padding:60px 90px;
+            background:#ffffff;
+        }
+        
+        .login-logo{
+            margin-bottom:60px;
+        }
+        
+        .login-logo img{
+            width:220px;
+        }
+        
+        .login-box{
+            max-width:460px;
+            width:100%;
+        }
+        
+        .login-subtitle{
+            color:#777;
+            font-size:15px;
+            margin-bottom:10px;
+        }
+        
+        .login-title{
+            font-size:42px;
+            font-weight:700;
+            color:#16161d;
+            margin-bottom:40px;
+        }
+        
+        .form-label{
+            color:#4f7c91 !important;
+            font-size:14px;
+            margin-bottom:10px;
+        }
+        
+        .form-control{
+            height:60px;
+            border:1px solid #d6dce2;
+            border-radius:6px;
+            padding:0 18px;
+            font-size:15px;
+            box-shadow:none !important;
+        }
+        
+        .form-control:focus{
+            border-color:#4a90e2;
+        }
+        
+        .btn{
+            height:60px;
+            border:none !important;
+            border-radius:6px !important;
+            background:#fb5607 !important;
+            font-size:16px !important;
+            font-weight:600;
+            transition:.3s;
+        }
+        
+        .btn:hover{
+            background:#e24d05 !important;
+        }
+        
+        .form-check-label{
+            color:#666 !important;
+        }
+        
+        /* RIGHT SIDE */
+        
+        .login-right{
+            background-image:url('/assets/img/login-bg.jpg');
+            background-size:cover;
+            background-position:center;
+            background-repeat:no-repeat;
+        }
+        
+        /* MOBILE */
+        
+        @media(max-width:991px){
+        
+            .auth-container{
+                grid-template-columns:1fr;
+            }
+        
+            .login-right{
+                display:none;
+            }
+        
+            .login-left{
+                padding:40px 25px;
+            }
+        
+            .login-title{
+                font-size:34px;
+            }
+        }
+        
+        </style>
 </head>
 <body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-layout="default">
 
-    <div class="auth-container d-flex">
-        <div class="container mx-auto align-self-center">
-            <div class="row">
-    
-                <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-8 col-12 d-flex flex-column align-self-center mx-auto">
-                    <div class="card mt-3 mb-3">
-                        <div class="card-body">
-                            <div class="row">
-								<div class="text-center">
-									{{-- <img src="/assets/img/logos/brand.svg" alt="Caribbean Transfers" class="img-fluid" width="132" height="132"> --}}
-									<img src="https://caribbean-transfers.com/assets/img/logo.svg" width="200" height="100" loading="lazy" alt="Logo | Caribbean Transfers" title="Logo | Caribbean Transfers">
-								</div>
-								@if ($errors->any())
-									<div class="alert alert-danger mt-3" role="alert">
-										<div class="alert-message">
-											{{ $errors->first() }}
-										</div>
-									</div>
-								@endif
+    <div class="auth-container">
 
-								<form id="log-in-form" method="POST" action="/login">
-									@csrf
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Email</label>
-											<input class="form-control" type="email" name="email" placeholder="Su email" value="{{ old('email') }}" autocomplete="username">
-										</div>
-									</div>
-									<div class="col-12">
-										<div class="mb-4">
-											<label class="form-label">Contraseña</label>
-											<input type="password" class="form-control" name="password" placeholder="Su contraseña" autocomplete="current-password">
-										</div>
-									</div>
-									<div class="col-12">
-										<div class="mb-3">
-											<div class="form-check form-check-primary form-check-inline">
-												<input class="form-check-input me-3" type="checkbox" value="remember-me" name="remember-me" checked id="form-check-default">
-												<label class="form-check-label" for="form-check-default">
-													Remember me
-												</label>
-											</div>
-										</div>
-									</div>
-									
-									<div class="col-12">
-										<div class="mb-4">
-											<button 
-                                                class="g-recaptcha btn btn-secondary btn-lg w-100"
-                                                data-sitekey="{{ config('services.gcaptcha.key')}}" 
-                                                data-callback="onSubmit"
-                                                data-action = 'submit'>Iniciar Sesión</button>											
-										</div>
-									</div>
-								</form>
-                            </div>
-                        </div>
+    <!-- LEFT -->
+    <div class="login-left">
+
+        <div class="login-logo">
+            <img src="https://caribbean-transfers.com/assets/img/logo.svg"
+                 alt="Caribbean Transfers">
+        </div>
+
+        <div class="login-box">
+
+            <div class="login-subtitle">
+                Welcome back
+            </div>
+
+            <div class="login-title">
+                Iniciar sesión
+            </div>
+
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form id="log-in-form" method="POST" action="/login">
+                @csrf
+
+                <div class="mb-4">
+                    <label class="form-label">Email</label>
+
+                    <input
+                        class="form-control"
+                        type="email"
+                        name="email"
+                        placeholder="contacto@caribbean-transfers.com"
+                        value="{{ old('email') }}"
+                        autocomplete="username">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Contraseña</label>
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password">
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="remember-me"
+                            checked>
+
+                        <label class="form-check-label">
+                            Remember me
+                        </label>
                     </div>
                 </div>
-            </div>            
+
+                <button
+                    class="g-recaptcha btn btn-secondary w-100"
+                    data-sitekey="{{ config('services.gcaptcha.key')}}"
+                    data-callback="onSubmit"
+                    data-action='submit'>
+
+                    Iniciar Sesión
+
+                </button>
+
+            </form>
+
         </div>
+
     </div>
 
+    <!-- RIGHT -->
+    <div class="login-right"></div>
+
+</div>
     <script src="{{ mix('/assets/js/core/core.min.js') }}"></script>
     <script src="{{ mix('/assets/js/panel/panel_custom.min.js') }}"></script>	
 	{{-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> --}}
