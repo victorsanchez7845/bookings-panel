@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\URL;
 
 // MODELS
 use App\Models\OperatorFee;
@@ -28,8 +29,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Forzar HTTPS en producción
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+        // Bootstrap pagination
         Paginator::useBootstrap();
+
+        // Observers
         OperatorFee::observe(OperatorFeeObserver::class);
         ReservationsItem::observe(ReservationItemObserver::class);
     }
