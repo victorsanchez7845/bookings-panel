@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Caribbean Transfers | Bookings</title>
-	<meta name="description" content="Caribbean Transfers | Bookings">
+    <title>Shuttles Central | Bookings</title>
+	<meta name="description" content="Shuttles Central | Bookings">
     <link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="/assets/img/icons/favicon.ico">
     @stack('Css')
