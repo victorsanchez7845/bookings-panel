@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     
     <title>@yield('title') | Bookings</title>
-	<meta name="description" content="Caribbean Transfers | Affiliates">
+	<meta name="description" content="Shuttles Central | Affiliates">
     <link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="/assets/img/icons/favicon-32x32.png">
 
