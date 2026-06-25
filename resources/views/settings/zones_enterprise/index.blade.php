@@ -7,7 +7,7 @@
 @endpush
 
 @push('Js')
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.gmaps.key') }}&libraries=drawing" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.gmaps.key') }}&v=3.64&libraries=drawing,places" async defer></script>
     <script src="{{ mix('/assets/js/sections/settings/zones_enterprise.min.js') }}"></script>
 @endpush
 
