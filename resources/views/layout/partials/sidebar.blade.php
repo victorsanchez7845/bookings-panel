@@ -81,7 +81,7 @@
         endif;
 
         //REPORTES
-        if(auth()->user()->hasPermission(43) || auth()->user()->hasPermission(45) || auth()->user()->hasPermission(50) || auth()->user()->hasPermission(71) || auth()->user()->hasPermission(97) || auth()->user()->hasPermission(98)):
+        if(auth()->user()->hasPermission(43) || auth()->user()->hasPermission(45) || auth()->user()->hasPermission(50) || auth()->user()->hasPermission(71) || auth()->user()->hasPermission(98)):
             if(auth()->user()->hasPermission(43)):
                 $links_reports[] = [
                     'name' => 'Pagos',
@@ -109,58 +109,44 @@
                     'route' => route('reports.commissions'),
                     'active' => request()->routeIs('reports.commissions'),
                 ];
+            endif;
+
             if(auth()->user()->hasPermission(98)):
-            
                 /*
                 |--------------------------------------------------------------------------
-                | TEMPORARY
+                | VENTAS TEMPORALMENTE SOLO PARA PUNTA CANA
                 |--------------------------------------------------------------------------
-                | The Sales submenu has been temporarily simplified to support only
-                | Punta Cana.
+                | Se ocultó el submenú de Cancún y Los Cabos. Mientras el panel opere
+                | únicamente para Punta Cana, la opción Ventas dirige directamente al
+                | reporte de Punta Cana.
                 |
-                | The original Cancun and Los Cabos submenu has been left below
-                | commented out so it can be restored easily if multi-destination
-                | support is needed again.
+                | Para restaurar los destinos anteriores, volver a crear el submenú con
+                | las rutas reports.sales.cancun y reports.sales.cabos.
                 |--------------------------------------------------------------------------
-                
-                $links_reportsSales_destination[] = [
-                    'name' => 'Cancun',
-                    'route' => route('reports.sales.cancun'),
-                    'active' => request()->routeIs('reports.sales.cancun'),
-                ];
-            
-                $links_reportsSales_destination[] = [
-                    'name' => 'Los cabos',
-                    'route' => route('reports.sales.cabos'),
-                    'active' => request()->routeIs('reports.sales.cabos'),
-                ];
-            
-                $links_reports[] = [
-                    'type' => 'multiple',
-                    'icon' => '<svg ... ></svg>',
-                    'code' => 'sales',
-                    'name' => 'Ventas',
-                    'route' => null,
-                    'active' => request()->routeIs('reports.sales.*'),
-                    'urls' => $links_reportsSales_destination
-                ];
                 */
-            
-                // Punta Cana only
                 $links_reports[] = [
                     'name' => 'Ventas',
                     'route' => route('reports.sales.puntacana'),
                     'active' => request()->routeIs('reports.sales.puntacana'),
                 ];
-            
             endif;
-            if(auth()->user()->hasPermission(97)):
+
+            /*
+            |--------------------------------------------------------------------------
+            | REPORTE DE OPERACIONES OCULTO TEMPORALMENTE
+            |--------------------------------------------------------------------------
+            | La opción Reportes > Operaciones está desactivada temporalmente.
+            | Para volver a mostrarla, cambiar false por true en la condición inferior.
+            |--------------------------------------------------------------------------
+            */
+            if(false && auth()->user()->hasPermission(97)):
                 $links_reports[] = [
                     'name' => 'Operaciones',
                     'route' => route('reports.operations'),
                     'active' => request()->routeIs('reports.operations'),
                 ];
             endif;
+
             array_push($links,[
                 'type' => 'multiple',
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>',
