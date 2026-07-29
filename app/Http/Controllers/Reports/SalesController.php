@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Reports;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-//REPOSITORY
+// REPOSITORY
 use App\Repositories\Reports\SalesRepository;
 
-//TRAIT
+// TRAIT
 use App\Traits\RoleTrait;
 
 class SalesController extends Controller
 {
     use RoleTrait;
 
-    private $SalesRepository;    
+    private $SalesRepository;
 
     public function __construct(SalesRepository $SalesRepository)
     {
@@ -24,21 +24,30 @@ class SalesController extends Controller
 
     public function index(Request $request)
     {
-        if(!$this->hasPermission(98)){
+        if (!$this->hasPermission(98)) {
             abort(403, 'NO TIENE AUTORIZACIÓN.');
         }
 
-        // Obtener el último segmento de la URL (en este caso, "cancun")
-        $destination = $request->segment(count($request->segments()));
+        // Obtiene el último segmento de la URL:
+        // cancun, cabos o punta-cana
+        $destination = last($request->segments());
 
-        // O también puedes usar la función helper de Laravel:
-        $destination = last(request()->segments());
+        switch ($destination) {
+            case 'cancun':
+                $id = 1;
+                break;
 
-        if ($destination == 'cancun') {
-            $id = 1;
-        } else {
-            $id = 2;
-        }        
+            case 'cabos':
+                $id = 2;
+                break;
+
+            case 'punta-cana':
+                $id = 3;
+                break;
+
+            default:
+                abort(404, 'Destino no válido.');
+        }
 
         return $this->SalesRepository->index($request, $id);
     }
