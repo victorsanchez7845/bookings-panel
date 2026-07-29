@@ -46,9 +46,9 @@
                             <div class="elements">
                                 <div class="rate_group">
                                     <label class="form-label" for="bookingRategroupForm">Destino</label>
+                                
                                     <select class="form-control mb-2" id="bookingRategroupForm" name="rate_group">
-                                        <option value="xLjDl18">Cancún</option>
-                                        <option value="uLKvL2025">Los cabos</option>
+                                        <option value="xLjDl18" selected>Punta Cana</option>
                                     </select>
                                 </div>
 
