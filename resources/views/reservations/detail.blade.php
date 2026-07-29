@@ -370,7 +370,7 @@
 
                 {{-- NOS PERMITE ENVIAR UNA INVITACIÓN DE PAGO AL CLIENTE CUANDO LA RESERVA SEA DIFERENTE DE CANCELADO O DUPLICADO --}}
                 @if ( ( $data['status'] != "CANCELLED" && $data['status'] != "DUPLICATED" ) && auth()->user()->hasPermission(22))
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="btn-group btn-group-sm d-none" role="group">
                         <button id="btndefault" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             INVITACIÓN DE PAGO
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -385,7 +385,7 @@
 
                 {{-- NOS PERMITE COPIAR EL LINK DE PAGO PARA ENVIARSELO AL CLIENTE LA RESERVA SEA DIFERENTE DE CANCELADO O DUPLICADO --}}
                 @if ( $data['status'] != "CANCELLED" && $data['status'] != "DUPLICATED" )
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="btn-group btn-group-sm d-none" role="group">
                         <button id="btndefault" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             COPIAR LINK DE PAGO STRIPE
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -409,7 +409,7 @@
 
                 {{-- NOS PERMITE COPIAR EL LINK DE PAGO PARA ENVIARSELO AL CLIENTE LA RESERVA SEA DIFERENTE DE CANCELADO O DUPLICADO --}}
                 @if ( $data['status'] != "CANCELLED" && $data['status'] != "DUPLICATED" )
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="btn-group btn-group-sm d-none" role="group">
                         <button id="btndefault" type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             COPIAR LINK DE PAGO OPENPAY
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -429,7 +429,7 @@
 
                 {{-- MOSTRARA EL BOTON DE ACTIVACION DE SERVICIO PLUS, SIEMPRE QUE LA RESERVA NO ESTA CANCELADA NI DUPLICADA --}}
                 @if (auth()->user()->hasPermission(94) && $reservation->is_quotation == 0 && $reservation->is_cancelled == 0 && $reservation->is_duplicated == 0 && $reservation->is_advanced == 0 )
-                    <button class="btn btn-success btn-sm enablePlusService" id="enablePlusService" data-code="{{ $reservation->id }}"><i class="align-middle" data-feather="delete"></i> ACTIVAR SERVICIO PLUS</button>
+                    <button class="btn btn-success btn-sm enablePlusService d-none" id="enablePlusService" data-code="{{ $reservation->id }}"><i class="align-middle" data-feather="delete"></i> ACTIVAR SERVICIO PLUS</button>
                 @endif
 
                 {{-- NOS PERMITE PONER COMO CREDITO ABIERTO CUANDO LA RESERVA ESTA CONFIRMADA Y EL CLIENTE QUIERE CANCELAR --}}
@@ -501,13 +501,13 @@
                             Pagos
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item d-none">
                         <a class="nav-link" href="#icon-tab-4" data-bs-toggle="tab" role="tab">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card align-middle"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                             Reembolsos
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item d-none">
                         <a class="nav-link" href="#icon-tab-8" data-bs-toggle="tab" role="tab">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck align-middle"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
                             Operación
@@ -573,8 +573,8 @@
                                                 @endif
 
                                                 @if ( $data['status'] == "PENDING" || $data['status'] == "PAY_AT_ARRIVAL" || $data['status'] == "CONFIRMED" || $data['status'] == "CREDIT" || $data['status'] == "QUOTATION" )
-                                                    <button type="button" class="btn btn-secondary btn-lg arrivalConfirmation" type="button" data-id="{{ $item->reservations_item_id }}" data-bs-toggle="modal" data-bs-target="#arrivalConfirmationModal">CONFIRMACIÓN DE LLEGADA</button>
-                                                    <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-secondary btn-lg arrivalConfirmation d-none" type="button" data-id="{{ $item->reservations_item_id }}" data-bs-toggle="modal" data-bs-target="#arrivalConfirmationModal">CONFIRMACIÓN DE LLEGADA</button>
+                                                    <div class="btn-group d-none" role="group">
                                                         <button type="button" class="btn btn-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             CONFIRMACIÓN DE SALIDA
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -585,7 +585,7 @@
                                                             <a class="dropdown-item" href="#" onclick="sendDepartureConfirmation(event, {{ $item->reservations_item_id }}, {{ $reservation->destination_id }}, 'es', 'departure', {{ $item->is_round_trip }})">Enviar en español</a>
                                                         </div>
                                                     </div>
-                                                    <div class="btn-group" role="group">
+                                                    <div class="btn-group d-none" role="group">
                                                         <button type="button" class="btn btn-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             TRANSFER RECOGIDA
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -596,7 +596,7 @@
                                                             <a class="dropdown-item" href="#" onclick="sendDepartureConfirmation(event, {{ $item->reservations_item_id }}, {{ $reservation->destination_id }}, 'es', 'transfer-pickup', {{ $item->is_round_trip }})">Enviar en español</a>
                                                         </div>
                                                     </div>
-                                                    <div class="btn-group" role="group">
+                                                    <div class="btn-group d-none" role="group">
                                                         <button type="button" class="btn btn-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             TRANSFER REGRESO
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
