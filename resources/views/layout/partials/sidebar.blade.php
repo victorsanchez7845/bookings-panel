@@ -109,28 +109,50 @@
                     'route' => route('reports.commissions'),
                     'active' => request()->routeIs('reports.commissions'),
                 ];
-            endif;            
             if(auth()->user()->hasPermission(98)):
+            
+                /*
+                |--------------------------------------------------------------------------
+                | TEMPORARY
+                |--------------------------------------------------------------------------
+                | The Sales submenu has been temporarily simplified to support only
+                | Punta Cana.
+                |
+                | The original Cancun and Los Cabos submenu has been left below
+                | commented out so it can be restored easily if multi-destination
+                | support is needed again.
+                |--------------------------------------------------------------------------
+                
                 $links_reportsSales_destination[] = [
                     'name' => 'Cancun',
                     'route' => route('reports.sales.cancun'),
                     'active' => request()->routeIs('reports.sales.cancun'),
                 ];
-
+            
                 $links_reportsSales_destination[] = [
                     'name' => 'Los cabos',
                     'route' => route('reports.sales.cabos'),
                     'active' => request()->routeIs('reports.sales.cabos'),
-                ];                
+                ];
+            
                 $links_reports[] = [
                     'type' => 'multiple',
-                    'icon' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>',
+                    'icon' => '<svg ... ></svg>',
                     'code' => 'sales',
                     'name' => 'Ventas',
                     'route' => null,
                     'active' => request()->routeIs('reports.sales.*'),
                     'urls' => $links_reportsSales_destination
                 ];
+                */
+            
+                // Punta Cana only
+                $links_reports[] = [
+                    'name' => 'Ventas',
+                    'route' => route('reports.sales.puntacana'),
+                    'active' => request()->routeIs('reports.sales.puntacana'),
+                ];
+            
             endif;
             if(auth()->user()->hasPermission(97)):
                 $links_reports[] = [
