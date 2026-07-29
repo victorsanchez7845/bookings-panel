@@ -230,9 +230,9 @@
             <div class="col-sm-12 col-xl-12">
                 <div class="alert alert-primary alert-dismissible" role="alert">                    
                     <div class="alert-message">
-                        <h4 class="alert-heading"><strong>Caribbean Transfers System</strong></h4>
-                        <p>Bienvenido al sistema de reservaciones de &copy;Caribbean Transfers, para soporte y aclaraciones no dude en contactarnos por correo:</p>
-                        <pre class="h6 text-danger mb-0">development@caribbean-transfers.com</pre>
+                        <h4 class="alert-heading"><strong>Taxi Dominicana System</strong></h4>
+                        <p>Bienvenido al sistema de reservaciones de &copy;Taxi Dominicana, para soporte y aclaraciones no dude en contactarnos por correo:</p>
+                        <pre class="h6 text-danger mb-0">contacto@taxidominicana.com</pre>
                     </div>
                 </div>
             </div>
