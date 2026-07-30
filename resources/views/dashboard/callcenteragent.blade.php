@@ -118,7 +118,7 @@
                         <div class="info-box">
                             <div class="icon">
                                 <span>
-                                    <img src="https://designreset.com/cork/html/src/assets/img/money-bag.png" alt="money-bag">
+                                    <img src="https://designreset.com/equation/html/src/assets/img/money-bag.png" alt="money-bag">
                                 </span>
                             </div>
                             <div class="balance-info">
@@ -142,7 +142,7 @@
                         <div class="info-box">
                             <div class="icon">
                                 <span>
-                                    <img src="https://designreset.com/cork/html/src/assets/img/money-bag.png" alt="money-bag">
+                                    <img src="https://designreset.com/equation/html/src/assets/img/money-bag.png" alt="money-bag">
                                 </span>
                             </div>
                             <div class="balance-info">
@@ -167,7 +167,7 @@
                         <div class="info-box">
                             <div class="icon">
                                 <span>
-                                    <img src="https://designreset.com/cork/html/src/assets/img/money-bag.png" alt="money-bag">
+                                    <img src="https://designreset.com/equation/html/src/assets/img/money-bag.png" alt="money-bag">
                                 </span>
                             </div>
                             <div class="balance-info">
