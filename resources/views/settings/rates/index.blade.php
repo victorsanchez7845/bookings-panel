@@ -1,176 +1,512 @@
 @extends('layout.app')
-@section('title') Tarifas Web @endsection
+
+@section('title')
+    Tarifas Web
+@endsection
 
 @push('Css')
-    <link href="{{ mix('/assets/css/sections/settings/rates.min.css') }}" rel="preload" as="style">
-    <link href="{{ mix('/assets/css/sections/settings/rates.min.css') }}" rel="stylesheet">
+    <link
+        href="{{ mix('/assets/css/sections/settings/rates.min.css') }}"
+        rel="preload"
+        as="style"
+    >
+    <link
+        href="{{ mix('/assets/css/sections/settings/rates.min.css') }}"
+        rel="stylesheet"
+    >
 @endpush
 
-@push('Js')    
+@push('Js')
     <script src="{{ mix('/assets/js/sections/settings/rates.min.js') }}"></script>
 @endpush
 
 @section('content')
     <div class="row layout-top-spacing">
+
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+
             <div id="filters" class="accordion">
+
                 <div class="card">
+
                     <div class="card-header" id="headingOne1">
                         <section class="mb-0 mt-0">
-                            <div role="menu" class="d-flex gap-3" data-bs-toggle="collapse" data-bs-target="#defaultAccordionOne" aria-expanded="true" aria-controls="defaultAccordionOne">
-                                Filtro de tarifas <div class="icons"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+                            <div
+                                role="menu"
+                                class="d-flex gap-3"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#defaultAccordionOne"
+                                aria-expanded="true"
+                                aria-controls="defaultAccordionOne"
+                            >
+                                Filtro de tarifas
+
+                                <div class="icons">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-chevron-down"
+                                    >
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
                             </div>
                         </section>
                     </div>
-                    <div id="defaultAccordionOne" class="card-body collapse show" aria-labelledby="headingOne1" data-bs-parent="#filters">
-                        <form action="" class="search-container" method="GET" id="zoneForm">
+
+                    <div
+                        id="defaultAccordionOne"
+                        class="card-body collapse show"
+                        aria-labelledby="headingOne1"
+                        data-bs-parent="#filters"
+                    >
+                        <form
+                            action=""
+                            class="search-container"
+                            method="GET"
+                            id="zoneForm"
+                        >
                             @csrf
+
                             <div>
-                                <select name="destination_id" class="form-control" id="destinationID">
-                                    <option value="0">Selecciona el destino</option>
-                                    @if (sizeof($destinations) >= 1)
-                                        @foreach ($destinations as $destination)
-                                            <option {{ isset($_REQUEST['destination_id']) && $_REQUEST['destination_id'] == $destination->id ? 'selected' : '' }} value="{{ $destination->id }}">{{ $destination->name }}</option>
-                                        @endforeach                                        
-                                    @endif
-                                </select>
-                            </div>
-                            <div class="two_">
-                                <div>
-                                    <select name="zone_one" class="form-control" id="rateZoneOneId" data-code="{{ isset($_REQUEST['zone_one']) ? $_REQUEST['zone_one'] : '' }}">
-                                        <option value="">Zona de origen</option>
-                                    </select>
-                                </div>
-                                <div class="label_">a</div>
-                                <div>
-                                    <select name="zone_two" class="form-control" id="rateZoneTwoId" data-code="{{ isset($_REQUEST['zone_two']) ? $_REQUEST['zone_two'] : '' }}">
-                                        <option value="">Zona de destino</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <select name="destination_service_id" class="form-control" id="rateServicesID" data-code="{{ isset($_REQUEST['destination_service_id']) ? $_REQUEST['destination_service_id'] : '' }}">
-                                    <option value="">[Vehículo]</option>
-                                </select>
-                            </div>                                
-                            <div>
-                                <select name="rate_group_id" class="form-control" id="rateGroupID">
-                                    <option value="">[Grupo de tarifa]</option>
-                                    @if(sizeof($rate_groups) >= 1)
-                                        @foreach ($rate_groups as $value)
-                                            <option {{ isset($_REQUEST['rate_group_id']) && $_REQUEST['rate_group_id'] == $value->id ? 'selected' : '' }} value="{{ $value->id }}">({{ $value->code }}) {{ $value->name }}</option>
+                                <select
+                                    name="destination_id"
+                                    class="form-control"
+                                    id="destinationID"
+                                >
+                                    <option value="0">
+                                        Selecciona el destino
+                                    </option>
+
+                                    @if(sizeof($destinations) >= 1)
+                                        @foreach($destinations as $destination)
+                                            <option
+                                                value="{{ $destination->id }}"
+                                                {{
+                                                    isset($_REQUEST['destination_id'])
+                                                    && $_REQUEST['destination_id'] == $destination->id
+                                                        ? 'selected'
+                                                        : ''
+                                                }}
+                                            >
+                                                {{ $destination->name }}
+                                            </option>
                                         @endforeach
                                     @endif
                                 </select>
-                            </div>                            
-                            <div>
-                                {{-- id="btnGetRates" --}}
-                                <button type="submit" class="btn btn-primary" style="padding: 12px 20px;">Buscar</button>
-                                @if (auth()->user()->hasPermission(33))
-                                    <a href="{{ route('enterprises.rates.web.create', [( isset($enterprise->id) ? $enterprise->id : 0 )]) }}" class="btn btn-success" style="padding: 12px 20px;">Agregar tarifa</a>                                    
-                                @endif                                
                             </div>
+
+                            <div class="two_">
+
+                                <div>
+                                    <select
+                                        name="zone_one"
+                                        class="form-control"
+                                        id="rateZoneOneId"
+                                        data-code="{{ isset($_REQUEST['zone_one']) ? $_REQUEST['zone_one'] : '' }}"
+                                    >
+                                        <option value="">
+                                            Zona de origen
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="label_">
+                                    a
+                                </div>
+
+                                <div>
+                                    <select
+                                        name="zone_two"
+                                        class="form-control"
+                                        id="rateZoneTwoId"
+                                        data-code="{{ isset($_REQUEST['zone_two']) ? $_REQUEST['zone_two'] : '' }}"
+                                    >
+                                        <option value="">
+                                            Zona de destino
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <select
+                                    name="destination_service_id"
+                                    class="form-control"
+                                    id="rateServicesID"
+                                    data-code="{{ isset($_REQUEST['destination_service_id']) ? $_REQUEST['destination_service_id'] : '' }}"
+                                >
+                                    <option value="">
+                                        [Vehículo]
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <select
+                                    name="rate_group_id"
+                                    class="form-control"
+                                    id="rateGroupID"
+                                >
+                                    <option value="">
+                                        [Grupo de tarifa]
+                                    </option>
+
+                                    @if(sizeof($rate_groups) >= 1)
+                                        @foreach($rate_groups as $value)
+                                            <option
+                                                value="{{ $value->id }}"
+                                                {{
+                                                    isset($_REQUEST['rate_group_id'])
+                                                    && $_REQUEST['rate_group_id'] == $value->id
+                                                        ? 'selected'
+                                                        : ''
+                                                }}
+                                            >
+                                                ({{ $value->code }})
+                                                {{ $value->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    style="padding: 12px 20px;"
+                                >
+                                    Buscar
+                                </button>
+
+                                @if(auth()->user()->hasPermission(33))
+                                    <a
+                                        href="{{ route(
+                                            'enterprises.rates.web.create',
+                                            [
+                                                isset($enterprise->id)
+                                                    ? $enterprise->id
+                                                    : 0
+                                            ]
+                                        ) }}"
+                                        class="btn btn-success"
+                                        style="padding: 12px 20px;"
+                                    >
+                                        Agregar tarifa
+                                    </a>
+                                @endif
+                            </div>
+
                         </form>
                     </div>
+
                 </div>
+
             </div>
+
         </div>
-    
-        {{-- <div class="col-12 col-sm-12"> --}}
-            {{-- <div class="card"> --}}
-                <div class="accordion" id="rates-container">
-                    @foreach ($rates as $key => $value)
-                        {{-- @dump($value->toArray()) --}}
-                        <div class="card item mb-0">
-                            <div class="card-header top_" id="bodyRate{{ $key }}">
-                                <section class="mb-0 mt-0">
-                                    <div role="menu" class="d-flex justify-content-between gap-3" data-bs-toggle="collapse" data-bs-target="#defaultAccordion{{ $key }}" aria-expanded="false" aria-controls="defaultAccordion{{ $key }}">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <p class="mb-0"><strong>Destino:</strong>    {{ isset($value->destination->name) ? $value->destination->name : 'Destino no encontrado' }}</p>
-                                            <p class="mb-0"><strong>Desde:</strong>      {{ isset($value->zoneOne->name) ? $value->zoneOne->name." (".$value->zoneOne->id.") " : 'Zona no encontrada' }}</p>
-                                            <p class="mb-0"><strong>Hacia:</strong>      {{ isset($value->zoneTwo->name) ? $value->zoneTwo->name." (".$value->zoneTwo->id.") " : 'Zona no encontrada' }}</p>
-                                            <p class="mb-0"><strong>Servicio:</strong>   {{ isset($value->destination_service->name) ? $value->destination_service->name : 'Tipo de unidad no encontrada' }}</p>
-                                        </div>
-                                        <div class="icons position-relative item-actions">
-                                            @if (auth()->user()->hasPermission(34))
-                                                <a class="btn btn-success" href="{{ route('enterprises.rates.web.edit', [$value->id]) }}">Editar tarifa</a>
-                                            @endif                            
-                                            @if (auth()->user()->hasPermission(35))
-                                                <button class="btn btn-danger" type="button" onclick="deleteItem({{ $value->id }})" data-id="{{ $value->id }}">Eliminar tarifa</button>
-                                            @endif                                           
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
-                            <div id="defaultAccordion{{ $key }}" class="card-body collapse" aria-labelledby="bodyRate{{ $key }}" data-bs-parent="#filters">
-                                @if($value->destination_service->price_type == "vehicle" || $value->destination_service->price_type == "shared")
-                                    <div class="bottom_">
-                                        <div class="single_2">
-                                            <div style="background: #ddf5f0;">
-                                                <strong style="font-size: 14px;color: #0e1726;">One way:</strong> 
-                                                $ {{ number_format($value->one_way,2) }}
-                                            </div>
-                                            <div style="background: #ddf5f0;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Round Trip:</strong> 
-                                                $ {{ number_format($value->round_trip,2) }}
-                                            </div>
-                                            <div style="background: #ddf5f0;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Costo operativo:</strong> 
-                                                $ {{ number_format($value->operating_cost,2) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
 
-                                @if($value->destination_service->price_type == "passenger")
-                                    <div class="bottom_">
-                                        <div class="multiple_2">
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">One Way (1-2):</strong> 
-                                                $ {{ number_format($value->ow_12,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Round Trip (1-2):</strong> 
-                                                $ {{ number_format($value->rt_12,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">One Way (3-7):</strong> 
-                                                $ {{ number_format($value->ow_37,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Round Trip (3-7):</strong> 
-                                                $ {{ number_format($value->rt_37,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Up OW (> 8):</strong> 
-                                                $ {{ number_format($value->up_8_ow,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Up RT (>8):</strong> 
-                                                $ {{ number_format($value->up_8_rt,2) }}
-                                            </div>
-                                            <div style="background: #e7f7ff;">
-                                                <strong style="font-size: 14px;color: #0e1726;">Costo operativo:</strong> 
-                                                $ {{ number_format($value->operating_cost,2) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+        <div class="accordion" id="rates-container">
 
-                                {{-- <div class="d-flex  gap-3">
-                                    @if (auth()->user()->hasPermission(34))
-                                        <a class="btn btn-success" href="{{ route('enterprises.rates.web.edit', [$value->id]) }}">Editar tarifa</a>
-                                    @endif                            
-                                    @if (auth()->user()->hasPermission(35))
-                                        <button class="btn btn-danger" type="button" onclick="deleteItem({{ $value->id }})" data-id="{{ $value->id }}">Eliminar tarifa</button>
+            @foreach($rates as $key => $value)
+
+                <div class="card item mb-0">
+
+                    <div
+                        class="card-header top_"
+                        id="bodyRate{{ $key }}"
+                    >
+                        <section class="mb-0 mt-0">
+
+                            <div
+                                role="menu"
+                                class="d-flex justify-content-between gap-3"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#defaultAccordion{{ $key }}"
+                                aria-expanded="false"
+                                aria-controls="defaultAccordion{{ $key }}"
+                            >
+
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <p class="mb-0">
+                                        <strong>Destino:</strong>
+
+                                        {{
+                                            isset($value->destination->name)
+                                                ? $value->destination->name
+                                                : 'Destino no encontrado'
+                                        }}
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <strong>Desde:</strong>
+
+                                        {{
+                                            isset($value->zoneOne->name)
+                                                ? $value->zoneOne->name
+                                                    . ' ('
+                                                    . $value->zoneOne->id
+                                                    . ')'
+                                                : 'Zona no encontrada'
+                                        }}
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <strong>Hacia:</strong>
+
+                                        {{
+                                            isset($value->zoneTwo->name)
+                                                ? $value->zoneTwo->name
+                                                    . ' ('
+                                                    . $value->zoneTwo->id
+                                                    . ')'
+                                                : 'Zona no encontrada'
+                                        }}
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <strong>Servicio:</strong>
+
+                                        {{
+                                            isset($value->destination_service->name)
+                                                ? $value->destination_service->name
+                                                : 'Tipo de unidad no encontrada'
+                                        }}
+                                    </p>
+
+                                </div>
+
+                                <div class="icons position-relative item-actions">
+
+                                    @if(auth()->user()->hasPermission(34))
+                                        <a
+                                            class="btn btn-success"
+                                            href="{{ route(
+                                                'enterprises.rates.web.edit',
+                                                [$value->id]
+                                            ) }}"
+                                        >
+                                            Editar tarifa
+                                        </a>
                                     @endif
-                                </div> --}}
+
+                                    @if(auth()->user()->hasPermission(35))
+                                        <button
+                                            class="btn btn-danger"
+                                            type="button"
+                                            onclick="deleteItem({{ $value->id }})"
+                                            data-id="{{ $value->id }}"
+                                        >
+                                            Eliminar tarifa
+                                        </button>
+                                    @endif
+
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-chevron-down"
+                                    >
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+
+                                </div>
+
                             </div>
-                        </div>                        
-                    @endforeach                    
+
+                        </section>
+                    </div>
+
+                    <div
+                        id="defaultAccordion{{ $key }}"
+                        class="card-body collapse"
+                        aria-labelledby="bodyRate{{ $key }}"
+                    >
+
+                        @if(
+                            isset($value->destination_service)
+                            && (
+                                $value->destination_service->price_type == 'vehicle'
+                                || $value->destination_service->price_type == 'shared'
+                            )
+                        )
+
+                            <div class="bottom_">
+
+                                <div class="single_2">
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            One way:
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->one_way, 2) }}
+                                    </div>
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Round Trip:
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->round_trip, 2) }}
+                                    </div>
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 1-6:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_1_6 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 7-10:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_7_10 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 11-15:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_11_15 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #ddf5f0;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 16-22:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_16_22 ?? 0), 2) }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endif
+
+                        @if(
+                            isset($value->destination_service)
+                            && $value->destination_service->price_type == 'passenger'
+                        )
+
+                            <div class="bottom_">
+
+                                <div class="multiple_2">
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            One Way (1-2):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->ow_12, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Round Trip (1-2):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->rt_12, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            One Way (3-7):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->ow_37, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Round Trip (3-7):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->rt_37, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Up OW (&gt; 8):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->up_8_ow, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Up RT (&gt; 8):
+                                        </strong>
+
+                                        $ {{ number_format((float) $value->up_8_rt, 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 1-6:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_1_6 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 7-10:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_7_10 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 11-15:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_11_15 ?? 0), 2) }}
+                                    </div>
+
+                                    <div style="background: #e7f7ff;">
+                                        <strong style="font-size: 14px; color: #0e1726;">
+                                            Costo operativo 16-22:
+                                        </strong>
+
+                                        $ {{ number_format((float) ($value->operating_cost_16_22 ?? 0), 2) }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
                 </div>
-            {{-- </div> --}}
-        {{-- </div> --}}
+
+            @endforeach
+
+        </div>
+
     </div>
 @endsection
