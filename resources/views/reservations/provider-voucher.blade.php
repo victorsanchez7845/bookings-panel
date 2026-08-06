@@ -1,562 +1,204 @@
-@php
-    $reservationId = $reservation->id ?? null;
-
-    $clientName = trim(
-        ($reservation->client_first_name ?? '') . ' ' .
-        ($reservation->client_last_name ?? '')
-    );
-
-    $currency = $currency ?? ($reservation->currency ?? 'USD');
-
-    $providerBalance = (float) ($provider_balance ?? 0);
-@endphp
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Cupón de proveedor - Reservación #{{ $reservationId }}
-    </title>
+    <title>Cupón operativo del proveedor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+<body style="margin:0; padding:0; background:#eef3f8; font-family: Arial, Helvetica, sans-serif; color:#24364b;">
 
-<body
-    style="
-        margin:0;
-        padding:0;
-        background:#f3f6f9;
-        font-family:Arial, Helvetica, sans-serif;
-        color:#26384a;
-    "
->
-    <table
-        role="presentation"
-        width="100%"
-        cellspacing="0"
-        cellpadding="0"
-        border="0"
-        style="
-            width:100%;
-            background:#f3f6f9;
-            border-collapse:collapse;
-        "
-    >
-        <tr>
-            <td
-                align="center"
-                style="padding:24px 12px;"
-            >
-                <table
-                    role="presentation"
-                    width="680"
-                    cellspacing="0"
-                    cellpadding="0"
-                    border="0"
-                    style="
-                        width:100%;
-                        max-width:680px;
-                        background:#ffffff;
-                        border-collapse:separate;
-                        border-spacing:0;
-                        border-radius:14px;
-                        overflow:hidden;
-                        box-shadow:0 8px 24px rgba(34, 58, 82, 0.10);
-                    "
-                >
-                    <tr>
-                        <td
-                            style="
-                                padding:26px 28px;
-                                background:#2f4a67;
-                                color:#ffffff;
-                            "
-                        >
-                            <table
-                                role="presentation"
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                border="0"
-                            >
-                                <tr>
-                                    <td>
-                                        <h1
-                                            style="
-                                                margin:0;
-                                                font-size:24px;
-                                                line-height:1.25;
-                                                font-weight:700;
-                                            "
-                                        >
-                                            Cupón operativo del proveedor
-                                        </h1>
+@php
+    $reservationData = $reservation ?? [];
+    $services = $items ?? data_get($reservationData, 'items', []);
 
-                                        <p
-                                            style="
-                                                margin:8px 0 0;
-                                                font-size:14px;
-                                                line-height:1.4;
-                                                color:#dbe8f4;
-                                            "
-                                        >
-                                            Reservación #{{ $reservationId }}
-                                        </p>
-                                    </td>
+    $firstName = data_get($reservationData, 'client.first_name', data_get($reservationData, 'first_name', ''));
+    $lastName  = data_get($reservationData, 'client.last_name', data_get($reservationData, 'last_name', ''));
+    $customerName = trim($firstName . ' ' . $lastName);
 
-                                    <td
-                                        align="right"
-                                        valign="middle"
-                                        style="
-                                            width:52px;
-                                            font-size:34px;
-                                        "
-                                    >
-                                        ✓
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+    if ($customerName === '') {
+        $customerName = data_get($reservationData, 'client.name', data_get($reservationData, 'name', 'N/D'));
+    }
 
-                    <tr>
-                        <td style="padding:26px 28px;">
-                            <table
-                                role="presentation"
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                border="0"
-                                style="
-                                    width:100%;
-                                    border-collapse:collapse;
-                                    margin-bottom:22px;
-                                "
-                            >
-                                <tr>
-                                    <td
-                                        style="
-                                            width:42%;
-                                            padding:7px 0;
-                                            color:#6a7f93;
-                                            font-size:14px;
-                                        "
-                                    >
-                                        Pasajero
-                                    </td>
+    $currency = $currency
+        ?? data_get($reservationData, 'config.currency')
+        ?? data_get($reservationData, 'currency')
+        ?? 'USD';
 
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#26384a;
-                                            font-size:14px;
-                                            font-weight:700;
-                                        "
-                                    >
-                                        {{ $clientName ?: 'No especificado' }}
-                                    </td>
-                                </tr>
-                            </table>
+    $payAtArrival = $payAtArrival
+        ?? $amount_due_at_arrival
+        ?? data_get($reservationData, 'pay_at_arrival')
+        ?? data_get($reservationData, 'payments.pay_at_arrival')
+        ?? data_get($reservationData, 'pending_arrival')
+        ?? 0;
+@endphp
 
-                            @foreach($items as $index => $item)
+<div style="width:100%; padding:24px 12px;">
+    <div style="max-width:920px; margin:0 auto; background:#ffffff; border-radius:22px; overflow:hidden; box-shadow:0 8px 30px rgba(20,40,70,.08);">
 
-                                @php
-                                    $arrivalDate = $item->op_one_pickup
-                                        ? \Carbon\Carbon::parse($item->op_one_pickup)
-                                        : null;
+        {{-- Header --}}
+        <div style="background:#274f78; padding:28px 40px;">
+            <h1 style="margin:0; font-size:26px; line-height:1.2; color:#ffffff; font-weight:700;">
+                Cupón operativo del proveedor
+            </h1>
+        </div>
 
-                                    $returnDate = $item->op_two_pickup
-                                        ? \Carbon\Carbon::parse($item->op_two_pickup)
-                                        : null;
+        <div style="padding:34px 40px 20px 40px;">
 
-                                    $flightNumber = trim(
-                                        (string) ($item->flight_number ?? '')
-                                    );
+            {{-- Pasajero --}}
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr>
+                    <td style="font-size:16px; color:#5f7691; padding:0 0 8px 0; width:42%;">
+                        Pasajero
+                    </td>
+                    <td style="font-size:18px; color:#24364b; font-weight:700; padding:0 0 8px 0;">
+                        {{ $customerName }}
+                    </td>
+                </tr>
+            </table>
 
-                                    $fromName = $item->from_name
-                                        ?: ($item->zone_from_name ?? 'No especificado');
+            @foreach($services as $service)
+                @php
+                    $code = data_get($service, 'code', 'N/D');
+                    $vehicle = data_get($service, 'service_type_name')
+                        ?? data_get($service, 'vehicle')
+                        ?? data_get($service, 'service_name')
+                        ?? 'N/D';
 
-                                    $toName = $item->to_name
-                                        ?: ($item->zone_to_name ?? 'No especificado');
+                    $passengers = data_get($service, 'passengers', 'N/D');
 
-                                    $vehicleName = $item->vehicle_name
-                                        ?? 'No especificado';
-                                @endphp
+                    $fromName = data_get($service, 'from.name')
+                        ?? data_get($service, 'from_name')
+                        ?? data_get($service, 'origin')
+                        ?? 'N/D';
 
-                                <table
-                                    role="presentation"
-                                    width="100%"
-                                    cellspacing="0"
-                                    cellpadding="0"
-                                    border="0"
-                                    style="
-                                        width:100%;
-                                        margin-bottom:20px;
-                                        border:1px solid #dfe6ed;
-                                        border-radius:10px;
-                                        border-collapse:separate;
-                                        border-spacing:0;
-                                        overflow:hidden;
-                                    "
-                                >
-                                    <tr>
-                                        <td
-                                            style="
-                                                padding:14px 18px;
-                                                background:#f4f8fb;
-                                                border-bottom:1px solid #dfe6ed;
-                                            "
-                                        >
-                                            <strong
-                                                style="
-                                                    color:#2f4a67;
-                                                    font-size:16px;
-                                                "
-                                            >
-                                                Servicio {{ $index + 1 }}
-                                            </strong>
+                    $toName = data_get($service, 'to.name')
+                        ?? data_get($service, 'to_name')
+                        ?? data_get($service, 'destination')
+                        ?? 'N/D';
 
-                                            @if(!empty($item->code))
-                                                <span
-                                                    style="
-                                                        display:block;
-                                                        margin-top:4px;
-                                                        color:#75899d;
-                                                        font-size:12px;
-                                                    "
-                                                >
-                                                    Código: {{ $item->code }}
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
+                    $flightInfo = data_get($service, 'flight_number')
+                        ?? data_get($service, 'flight_data')
+                        ?? 'N/D';
 
-                                    <tr>
-                                        <td style="padding:18px;">
-                                            <table
-                                                role="presentation"
-                                                width="100%"
-                                                cellspacing="0"
-                                                cellpadding="0"
-                                                border="0"
-                                                style="
-                                                    width:100%;
-                                                    border-collapse:collapse;
-                                                "
-                                            >
-                                                <tr>
-                                                    <td
-                                                        style="
-                                                            width:42%;
-                                                            padding:6px 0;
-                                                            color:#6a7f93;
-                                                            font-size:14px;
-                                                        "
-                                                    >
-                                                        Vehículo
-                                                    </td>
+                    $comment = trim(
+                        data_get($service, 'comments')
+                        ?? data_get($service, 'comment')
+                        ?? data_get($service, 'op_one_comments')
+                        ?? ''
+                    );
 
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#26384a;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        {{ $vehicleName }}
-                                                    </td>
-                                                </tr>
+                    $pickupOne = data_get($service, 'op_one_pickup')
+                        ?? data_get($service, 'pickup');
 
-                                                <tr>
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#6a7f93;
-                                                            font-size:14px;
-                                                        "
-                                                    >
-                                                        Pasajeros
-                                                    </td>
+                    $pickupTwo = data_get($service, 'op_two_pickup')
+                        ?? data_get($service, 'departure_pickup');
 
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#26384a;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        {{ $item->passengers ?? 0 }}
-                                                    </td>
-                                                </tr>
+                    $isRoundTrip = (bool) (
+                        data_get($service, 'is_round_trip')
+                        || !empty($pickupTwo)
+                    );
 
-                                                <tr>
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#6a7f93;
-                                                            font-size:14px;
-                                                        "
-                                                    >
-                                                        Desde
-                                                    </td>
+                    $pickupOneDate = $pickupOne ? \Carbon\Carbon::parse($pickupOne)->format('d/m/Y') : null;
+                    $pickupOneTime = $pickupOne ? \Carbon\Carbon::parse($pickupOne)->format('H:i') : null;
 
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#26384a;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        {{ $fromName }}
-                                                    </td>
-                                                </tr>
+                    $pickupTwoDate = $pickupTwo ? \Carbon\Carbon::parse($pickupTwo)->format('d/m/Y') : null;
+                    $pickupTwoTime = $pickupTwo ? \Carbon\Carbon::parse($pickupTwo)->format('H:i') : null;
+                @endphp
 
-                                                <tr>
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#6a7f93;
-                                                            font-size:14px;
-                                                        "
-                                                    >
-                                                        Hacia
-                                                    </td>
+                <div style="border:1px solid #d7e1eb; border-radius:18px; overflow:hidden; margin-bottom:28px;">
+                    <div style="background:#f2f7fc; padding:18px 24px; border-bottom:1px solid #d7e1eb;">
+                        <div style="font-size:16px; color:#5f7691; font-weight:600;">
+                            Código: {{ $code }}
+                        </div>
+                    </div>
 
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#26384a;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        {{ $toName }}
-                                                    </td>
-                                                </tr>
+                    <div style="padding:26px 24px 24px 24px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+                            <tr>
+                                <td style="width:40%; padding:0 0 18px 0; font-size:16px; color:#5f7691; vertical-align:top;">Vehículo</td>
+                                <td style="padding:0 0 18px 0; font-size:18px; color:#24364b; font-weight:700; vertical-align:top;">{{ $vehicle }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%; padding:0 0 18px 0; font-size:16px; color:#5f7691; vertical-align:top;">Pasajeros</td>
+                                <td style="padding:0 0 18px 0; font-size:18px; color:#24364b; font-weight:700; vertical-align:top;">{{ $passengers }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%; padding:0 0 18px 0; font-size:16px; color:#5f7691; vertical-align:top;">Desde</td>
+                                <td style="padding:0 0 18px 0; font-size:18px; color:#24364b; font-weight:700; vertical-align:top;">{{ $fromName }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%; padding:0 0 18px 0; font-size:16px; color:#5f7691; vertical-align:top;">Hacia</td>
+                                <td style="padding:0 0 18px 0; font-size:18px; color:#24364b; font-weight:700; vertical-align:top;">{{ $toName }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:40%; padding:0; font-size:16px; color:#5f7691; vertical-align:top;">Aerolínea y vuelo</td>
+                                <td style="padding:0; font-size:18px; color:#24364b; font-weight:700; vertical-align:top;">{{ $flightInfo }}</td>
+                            </tr>
+                        </table>
 
-                                                <tr>
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#6a7f93;
-                                                            font-size:14px;
-                                                        "
-                                                    >
-                                                        Aerolínea y vuelo
-                                                    </td>
-
-                                                    <td
-                                                        style="
-                                                            padding:6px 0;
-                                                            color:#26384a;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        {{ $flightNumber ?: 'No especificado' }}
-                                                    </td>
-                                                </tr>
-                                            </table>
-
-                                            <div
-                                                style="
-                                                    margin-top:16px;
-                                                    padding:14px 16px;
-                                                    background:#eef6ff;
-                                                    border-left:4px solid #4d94d8;
-                                                    border-radius:8px;
-                                                "
-                                            >
-                                                <p
-                                                    style="
-                                                        margin:0 0 8px;
-                                                        color:#2f4a67;
-                                                        font-size:14px;
-                                                        font-weight:700;
-                                                    "
-                                                >
-                                                    Llegada / servicio de ida
-                                                </p>
-
-                                                <p
-                                                    style="
-                                                        margin:0;
-                                                        color:#53697f;
-                                                        font-size:14px;
-                                                        line-height:1.5;
-                                                    "
-                                                >
-                                                    @if($arrivalDate)
-                                                        Fecha:
-                                                        <strong>
-                                                            {{ $arrivalDate->format('d/m/Y') }}
-                                                        </strong>
-
-                                                        <br>
-
-                                                        Hora:
-                                                        <strong>
-                                                            {{ $arrivalDate->format('H:i') }}
-                                                        </strong>
-                                                    @else
-                                                        Fecha y hora no especificadas
-                                                    @endif
-                                                </p>
-                                            </div>
-
-                                            @if(
-                                                (int) ($item->is_round_trip ?? 0) === 1
-                                                && $returnDate
-                                            )
-                                                <div
-                                                    style="
-                                                        margin-top:12px;
-                                                        padding:14px 16px;
-                                                        background:#fff8e8;
-                                                        border-left:4px solid #d6a530;
-                                                        border-radius:8px;
-                                                    "
-                                                >
-                                                    <p
-                                                        style="
-                                                            margin:0 0 8px;
-                                                            color:#5d4b1f;
-                                                            font-size:14px;
-                                                            font-weight:700;
-                                                        "
-                                                    >
-                                                        Servicio de regreso
-                                                    </p>
-
-                                                    <p
-                                                        style="
-                                                            margin:0;
-                                                            color:#6d603d;
-                                                            font-size:14px;
-                                                            line-height:1.5;
-                                                        "
-                                                    >
-                                                        Fecha:
-                                                        <strong>
-                                                            {{ $returnDate->format('d/m/Y') }}
-                                                        </strong>
-
-                                                        <br>
-
-                                                        Hora de pickup:
-                                                        <strong>
-                                                            {{ $returnDate->format('H:i') }}
-                                                        </strong>
-                                                    </p>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            @endforeach
-
-                            <table
-                                role="presentation"
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                border="0"
-                                style="
-                                    width:100%;
-                                    margin-top:8px;
-                                    border:2px solid #55b84d;
-                                    border-radius:12px;
-                                    background:#effff3;
-                                    border-collapse:separate;
-                                    border-spacing:0;
-                                "
-                            >
-                                <tr>
-                                    <td
-                                        align="center"
-                                        style="padding:20px;"
-                                    >
-                                        <p
-                                            style="
-                                                margin:0 0 7px;
-                                                color:#39763b;
-                                                font-size:13px;
-                                                font-weight:800;
-                                                letter-spacing:0.5px;
-                                                text-transform:uppercase;
-                                            "
-                                        >
-                                            Saldo a cobrar al cliente al llegar
-                                        </p>
-
-                                        <p
-                                            style="
-                                                margin:0;
-                                                color:#174e25;
-                                                font-size:30px;
-                                                line-height:1.2;
-                                                font-weight:800;
-                                            "
-                                        >
-                                            {{ number_format($providerBalance, 2) }}
-                                            {{ $currency }}
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div
-                                style="
-                                    margin-top:20px;
-                                    padding:14px 16px;
-                                    background:#fff5f5;
-                                    border-left:4px solid #d95c5c;
-                                    border-radius:8px;
-                                "
-                            >
-                                <p
-                                    style="
-                                        margin:0;
-                                        color:#874040;
-                                        font-size:13px;
-                                        line-height:1.5;
-                                    "
-                                >
-                                    <strong>Importante:</strong>
-                                    este cupón contiene únicamente información
-                                    operativa. El contacto y seguimiento con el
-                                    pasajero será gestionado por Taxi Dominicana.
-                                </p>
+                        @if($comment !== '')
+                            <div style="background:#fff8e8; border:1px solid #f1d59b; border-left:5px solid #f0b43c; border-radius:14px; padding:16px 18px; margin:0 0 18px 0;">
+                                <div style="font-size:15px; font-weight:700; color:#7b5a11; margin-bottom:8px;">
+                                    Comentarios de la reserva
+                                </div>
+                                <div style="font-size:16px; line-height:1.55; color:#5f4a1f;">
+                                    {{ $comment }}
+                                </div>
                             </div>
-                        </td>
-                    </tr>
+                        @endif
 
-                    <tr>
-                        <td
-                            align="center"
-                            style="
-                                padding:18px 24px;
-                                background:#eef3f7;
-                                color:#71869a;
-                                font-size:12px;
-                                line-height:1.5;
-                            "
-                        >
-                            Taxi Dominicana — Documento operativo interno
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                        @if($pickupOne)
+                            <div style="background:#edf4fb; border-left:5px solid #4591df; border-radius:14px; padding:18px 22px; margin-bottom:14px;">
+                                <div style="font-size:16px; font-weight:700; color:#304d6a; margin-bottom:10px;">
+                                    Llegada / servicio de ida
+                                </div>
+                                <div style="font-size:16px; color:#536c86; line-height:1.6;">
+                                    <strong style="color:#304d6a;">Fecha:</strong> {{ $pickupOneDate ?? 'N/D' }}<br>
+                                    <strong style="color:#304d6a;">Hora:</strong> {{ $pickupOneTime ?? 'N/D' }}
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($isRoundTrip && $pickupTwo)
+                            <div style="background:#edf4fb; border-left:5px solid #4591df; border-radius:14px; padding:18px 22px;">
+                                <div style="font-size:16px; font-weight:700; color:#304d6a; margin-bottom:10px;">
+                                    Regreso / servicio de salida
+                                </div>
+                                <div style="font-size:16px; color:#536c86; line-height:1.6;">
+                                    <strong style="color:#304d6a;">Fecha:</strong> {{ $pickupTwoDate ?? 'N/D' }}<br>
+                                    <strong style="color:#304d6a;">Hora:</strong> {{ $pickupTwoTime ?? 'N/D' }}
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- Saldo --}}
+            <div style="background:#eef8ef; border:3px solid #4caf50; border-radius:18px; padding:28px 24px; text-align:center; margin:8px 0 28px 0;">
+                <div style="font-size:18px; line-height:1.4; font-weight:700; color:#3b7840; text-transform:uppercase; letter-spacing:.4px;">
+                    Saldo a cobrar al cliente al llegar
+                </div>
+                <div style="margin-top:12px; font-size:28px; line-height:1.2; font-weight:800; color:#165d2a;">
+                    {{ number_format((float)$payAtArrival, 2) }} {{ $currency }}
+                </div>
+            </div>
+
+            {{-- Aviso --}}
+            <div style="background:#fff3f2; border-left:5px solid #df5b57; border-radius:14px; padding:18px 20px; margin-bottom:24px;">
+                <div style="font-size:16px; line-height:1.6; color:#8b403e;">
+                    <strong>Importante:</strong> este cupón contiene únicamente información operativa.
+                    El contacto y seguimiento con el pasajero será gestionado por Taxi Dominicana.
+                </div>
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div style="padding:22px 30px 28px 30px; text-align:center; color:#7e93a8; font-size:15px;">
+            Taxi Dominicana — Documento operativo interno
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
