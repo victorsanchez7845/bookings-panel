@@ -93,7 +93,7 @@
         const rez_id = {{ isset($reservation->id) ? $reservation->id : 0 }};
         const payment_request_sent = {{ isset($reservation->payment_request_sent) ? $reservation->payment_request_sent : 0 }};
         const rez_currency = "{{ $reservation->currency }}";
-        const rez_pending  = {{ round($data['total_sales'], 2) - round($data['total_payments'], 2) }};
+        const rez_pending  = {{ round($data['online_pending'] ?? 0, 2) }};
     </script>    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
@@ -224,7 +224,7 @@
                                     </tr>                                    
                                 @endif
                                 <tr>
-                                    <th>Pago al llegar</th>
+                                    <th>Pago total al llegar</th>
                                     <td><span class="badge bg-{{ $reservation->pay_at_arrival == 1 ? 'success' : 'danger' }}">{{ $reservation->pay_at_arrival == 1 ? 'Sí' : 'No' }}</span></td>
                                 </tr>
                                 @if ( $reservation->is_quotation == 0 && $reservation->was_is_quotation == 1 )
@@ -274,16 +274,24 @@
                                     </tr>
                                 @endif
                                 <tr>
-                                    <th>Total a pagar:</th>
-                                    <td>$ {{ round( $data['total_sales'], 2) }} {{ $reservation->currency }}</td>
+                                    <th>Total de la reserva:</th>
+                                    <td>$ {{ number_format($data['total_sales'] ?? 0, 2) }} {{ $reservation->currency }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Total pagado:</th>
-                                    <td>$ {{ round( $data['total_payments'], 2) }} {{ $reservation->currency }}</td>
+                                    <th>Paga ahora:</th>
+                                    <td><strong>$ {{ number_format($data['pay_now_amount'] ?? $data['total_sales'] ?? 0, 2) }} {{ $reservation->currency }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>Total pendiente de pago:</th>
-                                    <td>$ {{ round( $data['total_sales'], 2) - round( $data['total_payments'], 2) }} {{ $reservation->currency }}</td>
+                                    <th>Pagado en línea:</th>
+                                    <td>$ {{ number_format($data['total_payments'] ?? 0, 2) }} {{ $reservation->currency }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Pago al llegar:</th>
+                                    <td><strong>$ {{ number_format($data['pay_at_arrival_amount'] ?? 0, 2) }} {{ $reservation->currency }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Pendiente en línea:</th>
+                                    <td>$ {{ number_format($data['online_pending'] ?? 0, 2) }} {{ $reservation->currency }}</td>
                                 </tr>
                                 @if( isset( $reservation->cancellationType->name_es ) )
                                     <tr>
