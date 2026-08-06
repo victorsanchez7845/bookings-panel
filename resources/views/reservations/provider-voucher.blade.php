@@ -8,28 +8,20 @@
 <body style="margin:0; padding:0; background:#eef3f8; font-family: Arial, Helvetica, sans-serif; color:#24364b;">
 
 @php
-    $reservationData = $reservation ?? [];
-    $services = $items ?? data_get($reservationData, 'items', []);
+    $services = $items ?? collect();
 
-    $firstName = data_get($reservationData, 'client.first_name', data_get($reservationData, 'first_name', ''));
-    $lastName  = data_get($reservationData, 'client.last_name', data_get($reservationData, 'last_name', ''));
-    $customerName = trim($firstName . ' ' . $lastName);
+    $customerName = trim(
+        ($reservation->client_first_name ?? '') . ' ' .
+        ($reservation->client_last_name ?? '')
+    );
 
     if ($customerName === '') {
-        $customerName = data_get($reservationData, 'client.name', data_get($reservationData, 'name', 'N/D'));
+        $customerName = 'No especificado';
     }
 
-    $currency = $currency
-        ?? data_get($reservationData, 'config.currency')
-        ?? data_get($reservationData, 'currency')
-        ?? 'USD';
+    $currency = $currency ?? ($reservation->currency ?? 'USD');
 
-    $payAtArrival = $payAtArrival
-        ?? $amount_due_at_arrival
-        ?? data_get($reservationData, 'pay_at_arrival')
-        ?? data_get($reservationData, 'payments.pay_at_arrival')
-        ?? data_get($reservationData, 'pending_arrival')
-        ?? 0;
+    $payAtArrival = (float) ($provider_balance ?? 0);
 @endphp
 
 <div style="width:100%; padding:24px 12px;">
@@ -58,57 +50,62 @@
 
             @foreach($services as $service)
                 @php
-                    $code = data_get($service, 'code', 'N/D');
-                    $vehicle = data_get($service, 'service_type_name')
-                        ?? data_get($service, 'vehicle')
-                        ?? data_get($service, 'service_name')
-                        ?? 'N/D';
+                    $code = $service->code ?? 'No especificado';
 
-                    $passengers = data_get($service, 'passengers', 'N/D');
+                    $vehicle = $service->vehicle_name
+                        ?? 'No especificado';
 
-                    $fromName = data_get($service, 'from.name')
-                        ?? data_get($service, 'from_name')
-                        ?? data_get($service, 'origin')
-                        ?? 'N/D';
+                    $passengers = $service->passengers
+                        ?? 'No especificado';
 
-                    $toName = data_get($service, 'to.name')
-                        ?? data_get($service, 'to_name')
-                        ?? data_get($service, 'destination')
-                        ?? 'N/D';
+                    $fromName = $service->from_name
+                        ?: ($service->zone_from_name ?? 'No especificado');
 
-                    $flightInfo = data_get($service, 'flight_number')
-                        ?? data_get($service, 'flight_data')
-                        ?? 'N/D';
+                    $toName = $service->to_name
+                        ?: ($service->zone_to_name ?? 'No especificado');
 
-                    $comment = trim(
-                        data_get($service, 'comments')
-                        ?? data_get($service, 'comment')
-                        ?? data_get($service, 'op_one_comments')
-                        ?? ''
+                    $flightInfo = trim(
+                        (string) ($service->flight_number ?? '')
                     );
 
-                    $pickupOne = data_get($service, 'op_one_pickup')
-                        ?? data_get($service, 'pickup');
+                    if ($flightInfo === '') {
+                        $flightInfo = 'No especificado';
+                    }
 
-                    $pickupTwo = data_get($service, 'op_two_pickup')
-                        ?? data_get($service, 'departure_pickup');
-
-                    $isRoundTrip = (bool) (
-                        data_get($service, 'is_round_trip')
-                        || !empty($pickupTwo)
+                    $arrivalComment = trim(
+                        (string) ($service->op_one_comments ?? '')
                     );
 
-                    $pickupOneDate = $pickupOne ? \Carbon\Carbon::parse($pickupOne)->format('d/m/Y') : null;
-                    $pickupOneTime = $pickupOne ? \Carbon\Carbon::parse($pickupOne)->format('H:i') : null;
+                    $returnComment = trim(
+                        (string) ($service->op_two_comments ?? '')
+                    );
 
-                    $pickupTwoDate = $pickupTwo ? \Carbon\Carbon::parse($pickupTwo)->format('d/m/Y') : null;
-                    $pickupTwoTime = $pickupTwo ? \Carbon\Carbon::parse($pickupTwo)->format('H:i') : null;
+                    $pickupOne = $service->op_one_pickup ?? null;
+                    $pickupTwo = $service->op_two_pickup ?? null;
+
+                    $isRoundTrip = (int) ($service->is_round_trip ?? 0) === 1;
+
+                    $pickupOneDate = $pickupOne
+                        ? \Carbon\Carbon::parse($pickupOne)->format('d/m/Y')
+                        : null;
+
+                    $pickupOneTime = $pickupOne
+                        ? \Carbon\Carbon::parse($pickupOne)->format('H:i')
+                        : null;
+
+                    $pickupTwoDate = $pickupTwo
+                        ? \Carbon\Carbon::parse($pickupTwo)->format('d/m/Y')
+                        : null;
+
+                    $pickupTwoTime = $pickupTwo
+                        ? \Carbon\Carbon::parse($pickupTwo)->format('H:i')
+                        : null;
                 @endphp
 
                 <div style="border:1px solid #d7e1eb; border-radius:18px; overflow:hidden; margin-bottom:28px;">
                     <div style="background:#f2f7fc; padding:18px 24px; border-bottom:1px solid #d7e1eb;">
                         <div style="font-size:16px; color:#5f7691; font-weight:600;">
-                            Código: {{ $code }}
+                            Reservación No.: {{ $code }}
                         </div>
                     </div>
 
@@ -136,14 +133,25 @@
                             </tr>
                         </table>
 
-                        @if($comment !== '')
+                        @if($arrivalComment !== '' || $returnComment !== '')
                             <div style="background:#fff8e8; border:1px solid #f1d59b; border-left:5px solid #f0b43c; border-radius:14px; padding:16px 18px; margin:0 0 18px 0;">
-                                <div style="font-size:15px; font-weight:700; color:#7b5a11; margin-bottom:8px;">
-                                    Comentarios de la reserva
+                                <div style="font-size:15px; font-weight:700; color:#65470b; margin-bottom:10px;">
+                                    Comentarios operativos
                                 </div>
-                                <div style="font-size:16px; line-height:1.55; color:#5f4a1f;">
-                                    {{ $comment }}
-                                </div>
+
+                                @if($arrivalComment !== '')
+                                    <div style="font-size:16px; line-height:1.55; color:#4e3c17; margin-bottom:{{ $returnComment !== '' ? '12px' : '0' }};">
+                                        <strong>Servicio de ida:</strong><br>
+                                        {!! nl2br(e($arrivalComment)) !!}
+                                    </div>
+                                @endif
+
+                                @if($returnComment !== '')
+                                    <div style="font-size:16px; line-height:1.55; color:#4e3c17;">
+                                        <strong>Servicio de regreso:</strong><br>
+                                        {!! nl2br(e($returnComment)) !!}
+                                    </div>
+                                @endif
                             </div>
                         @endif
 
