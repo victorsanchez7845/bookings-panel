@@ -84,6 +84,50 @@
             pointer-events: none;
             backdrop-filter: blur(2px);
         }
+
+        .btn-provider-voucher {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 38px;
+            padding: 0.625rem 0.875rem;
+            border: 0;
+            border-radius: 6px;
+            background: #6f42c1;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(111, 66, 193, 0.22);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-provider-voucher:hover,
+        .btn-provider-voucher:focus {
+            background: #5f35ad;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn-provider-voucher:disabled {
+            cursor: wait;
+            opacity: 0.7;
+            transform: none;
+        }
+
+        .btn-provider-voucher svg {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 767.98px) {
+            .controls .btn-provider-voucher {
+                width: 100%;
+            }
+        }
     </style>
 @endpush
 
@@ -180,6 +224,80 @@
         lightGallery(document.getElementById('media-listing'), {
             thumbnail: true,
         })        
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const providerVoucherButton = document.getElementById(
+                'sendProviderVoucherButton'
+            );
+
+            if (!providerVoucherButton) {
+                return;
+            }
+
+            providerVoucherButton.addEventListener('click', async function () {
+                const confirmed = window.confirm(
+                    '¿Deseas enviar el cupón operativo a bookings@taxidominicana.com y contacto@taxidominicana.com?'
+                );
+
+                if (!confirmed) {
+                    return;
+                }
+
+                const originalContent = providerVoucherButton.innerHTML;
+
+                providerVoucherButton.disabled = true;
+                providerVoucherButton.innerHTML = 'ENVIANDO CUPÓN...';
+
+                try {
+                    const response = await fetch(
+                        providerVoucherButton.dataset.url,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({})
+                        }
+                    );
+
+                    let result = {};
+
+                    try {
+                        result = await response.json();
+                    } catch (jsonError) {
+                        throw new Error(
+                            'El servidor devolvió una respuesta no válida.'
+                        );
+                    }
+
+                    if (!response.ok || result.success === false) {
+                        throw new Error(
+                            result.message || 'No fue posible enviar el cupón.'
+                        );
+                    }
+
+                    window.alert(
+                        result.message || 'Cupón enviado correctamente.'
+                    );
+
+                    window.location.reload();
+
+                } catch (error) {
+                    window.alert(
+                        error.message || 'No fue posible enviar el cupón.'
+                    );
+
+                    providerVoucherButton.disabled = false;
+                    providerVoucherButton.innerHTML = originalContent;
+                }
+            });
+        });
     </script>
 @endpush
 
@@ -355,6 +473,35 @@
                             <a class="dropdown-item" href="#" onclick="sendMail('{{ $reservation->items->first()->code }}','{{ $reservation->client_email }}','en')">Inglés</a>
                         </div>
                     </div>
+                @endif
+
+                {{-- ENVÍA EL CUPÓN OPERATIVO AL PROVEEDOR Y A BOOKINGS --}}
+                @if (auth()->user()->hasPermission(61))
+                    <button
+                        type="button"
+                        id="sendProviderVoucherButton"
+                        class="btn btn-provider-voucher btn-sm"
+                        data-url="{{ route('reservations.sendProviderVoucher', ['reservation' => $reservation->id]) }}"
+                        title="Enviar cupón operativo al proveedor"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M2 9a3 3 0 0 0 0 6v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a3 3 0 0 0 0-6V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path>
+                            <path d="M13 5v2"></path>
+                            <path d="M13 17v2"></path>
+                            <path d="M13 11v2"></path>
+                        </svg>
+
+                        ENVIAR CUPÓN AL PROVEEDOR
+                    </button>
                 @endif
 
                 {{-- NOS PERMITE AGREGAR SEGUIMIENTOS DE LA RESERVA, SOLO CUANDO ESTA COMO PENDIENTE, CONFIRMADA O A CREDITO --}}
