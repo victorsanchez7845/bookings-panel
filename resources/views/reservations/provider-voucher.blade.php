@@ -8,9 +8,6 @@
 
     $currency = $currency ?? ($reservation->currency ?? 'USD');
 
-    $totalSales = (float) ($total_sales ?? 0);
-    $totalPayments = (float) ($total_payments ?? 0);
-    $payNowAmount = (float) ($pay_now_amount ?? 0);
     $providerBalance = (float) ($provider_balance ?? 0);
 @endphp
 
@@ -162,77 +159,6 @@
                                         "
                                     >
                                         {{ $clientName ?: 'No especificado' }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#6a7f93;
-                                            font-size:14px;
-                                        "
-                                    >
-                                        Moneda
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#26384a;
-                                            font-size:14px;
-                                            font-weight:700;
-                                        "
-                                    >
-                                        {{ $currency }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#6a7f93;
-                                            font-size:14px;
-                                        "
-                                    >
-                                        Total de la reservación
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#26384a;
-                                            font-size:14px;
-                                            font-weight:700;
-                                        "
-                                    >
-                                        {{ number_format($totalSales, 2) }}
-                                        {{ $currency }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#6a7f93;
-                                            font-size:14px;
-                                        "
-                                    >
-                                        Pagado en línea
-                                    </td>
-
-                                    <td
-                                        style="
-                                            padding:7px 0;
-                                            color:#26384a;
-                                            font-size:14px;
-                                            font-weight:700;
-                                        "
-                                    >
-                                        {{ number_format($totalPayments, 2) }}
-                                        {{ $currency }}
                                     </td>
                                 </tr>
                             </table>
@@ -569,7 +495,7 @@
                                                 text-transform:uppercase;
                                             "
                                         >
-                                            Saldo a cobrar al cliente
+                                            Saldo a cobrar al cliente al llegar
                                         </p>
 
                                         <p
