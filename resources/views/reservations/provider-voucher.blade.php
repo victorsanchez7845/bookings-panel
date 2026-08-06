@@ -133,20 +133,20 @@
                             </tr>
                         </table>
 
-                        @if($arrivalComment !== '' || ($isRoundTrip && $returnComment !== ''))
+                        @if($arrivalComment !== '' || ($isRoundTrip && $pickupTwo && $returnComment !== ''))
                             <div style="background:#fff8e8; border:1px solid #f1d59b; border-left:5px solid #f0b43c; border-radius:14px; padding:16px 18px; margin:0 0 18px 0;">
                                 <div style="font-size:15px; font-weight:700; color:#65470b; margin-bottom:10px;">
                                     Comentarios operativos
                                 </div>
 
                                 @if($arrivalComment !== '')
-                                    <div style="font-size:16px; line-height:1.55; color:#4e3c17; margin-bottom:{{ $isRoundTrip && $returnComment !== '' ? '12px' : '0' }};">
+                                    <div style="font-size:16px; line-height:1.55; color:#4e3c17; margin-bottom:{{ $isRoundTrip && $pickupTwo && $returnComment !== '' ? '12px' : '0' }};">
                                         <strong>Servicio de ida:</strong><br>
                                         {!! nl2br(e($arrivalComment)) !!}
                                     </div>
                                 @endif
 
-                                @if($isRoundTrip && $returnComment !== '')
+                                @if($isRoundTrip && $pickupTwo && $returnComment !== '')
                                     <div style="font-size:16px; line-height:1.55; color:#4e3c17;">
                                         <strong>Servicio de regreso:</strong><br>
                                         {!! nl2br(e($returnComment)) !!}
