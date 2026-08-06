@@ -1158,6 +1158,8 @@ class ReservationsRepository
                     'item.to_name',
                     'item.op_one_pickup',
                     'item.op_two_pickup',
+                    'item.op_one_comments',
+                    'item.op_two_comments',
                     'service.name as vehicle_name',
                     'zone_from.name as zone_from_name',
                     'zone_to.name as zone_to_name',
