@@ -1115,18 +1115,6 @@ class ReservationsRepository
                 2
             );
 
-            if ($onlinePending > 0) {
-                return response()->json([
-                    'status' => 'warning',
-                    'success' => false,
-                    'message' => 'El cliente todavía tiene un pago pendiente en línea de '
-                        . number_format($onlinePending, 2)
-                        . ' '
-                        . $reservation->currency
-                        . '.',
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
             if ($providerBalance <= 0) {
                 return response()->json([
                     'status' => 'warning',
@@ -1217,6 +1205,27 @@ class ReservationsRepository
             |
             */
 
+            $emailSubject = 'Cupón de proveedor - Reservación #'
+                . $reservation->id;
+
+            $emailText = 'Cupón operativo de la reservación #'
+                . $reservation->id
+                . '. Saldo a cobrar: '
+                . number_format($providerBalance, 2)
+                . ' '
+                . $reservation->currency;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Enviar como dos mensajes independientes
+            |--------------------------------------------------------------------------
+            |
+            | De esta forma Mailjet devuelve un resultado separado para bookings
+            | y otro para el proveedor. También evitamos que un destinatario
+            | bloqueado o inválido afecte la entrega al otro destinatario.
+            |
+            */
+
             $emailData = [
                 'Messages' => [
                     [
@@ -1229,19 +1238,24 @@ class ReservationsRepository
                                 'Email' => 'bookings@taxidominicana.com',
                                 'Name' => 'Taxi Dominicana Bookings',
                             ],
+                        ],
+                        'Subject' => $emailSubject,
+                        'TextPart' => $emailText,
+                        'HTMLPart' => $message,
+                    ],
+                    [
+                        'From' => [
+                            'Email' => 'bookings@taxidominicana.com',
+                            'Name' => 'Taxi Dominicana Bookings',
+                        ],
+                        'To' => [
                             [
                                 'Email' => 'contacto@taxidominicana.com',
                                 'Name' => 'Proveedor de transporte',
                             ],
                         ],
-                        'Subject' => 'Cupón de proveedor - Reservación #'
-                            . $reservation->id,
-                        'TextPart' => 'Cupón operativo de la reservación #'
-                            . $reservation->id
-                            . '. Saldo a cobrar: '
-                            . number_format($providerBalance, 2)
-                            . ' '
-                            . $reservation->currency,
+                        'Subject' => $emailSubject,
+                        'TextPart' => $emailText,
                         'HTMLPart' => $message,
                     ],
                 ],
@@ -1249,12 +1263,58 @@ class ReservationsRepository
 
             $emailResponse = $this->sendMailjet($emailData);
 
-            if (
-                !isset($emailResponse['Messages'][0]['Status'])
-                || $emailResponse['Messages'][0]['Status'] !== 'success'
-            ) {
+            /*
+            |--------------------------------------------------------------------------
+            | Guardar respuesta completa de Mailjet
+            |--------------------------------------------------------------------------
+            */
+
+            try {
+                $this->createLog([
+                    'type' => 'info',
+                    'category' => 'provider_voucher_mailjet',
+                    'message' => json_encode([
+                        'reservation_id' => $reservation->id,
+                        'recipients' => [
+                            'bookings@taxidominicana.com',
+                            'contacto@taxidominicana.com',
+                        ],
+                        'mailjet_response' => $emailResponse,
+                    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ]);
+            } catch (Exception $logException) {
+                // El fallo del log no debe impedir el envío.
+            }
+
+            $mailjetMessages = $emailResponse['Messages'] ?? [];
+
+            if (count($mailjetMessages) !== 2) {
                 throw new Exception(
-                    'La plataforma de correo no pudo enviar el cupón.'
+                    'Mailjet no devolvió el resultado de ambos destinatarios.'
+                );
+            }
+
+            $failedRecipients = [];
+
+            foreach ($mailjetMessages as $index => $mailjetMessage) {
+                $status = strtolower($mailjetMessage['Status'] ?? '');
+
+                if ($status !== 'success') {
+                    $failedRecipients[] = $index === 0
+                        ? 'bookings@taxidominicana.com'
+                        : 'contacto@taxidominicana.com';
+                }
+            }
+
+            if (!empty($failedRecipients)) {
+                throw new Exception(
+                    'Mailjet rechazó el envío para: '
+                    . implode(', ', $failedRecipients)
+                    . '. Respuesta: '
+                    . json_encode(
+                        $emailResponse,
+                        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    )
                 );
             }
 
