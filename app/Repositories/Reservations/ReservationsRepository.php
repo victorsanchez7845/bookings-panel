@@ -1020,6 +1020,290 @@ class ReservationsRepository
         }
     }
 
+
+    /**
+     * Envía el cupón operativo al proveedor y al equipo de reservaciones.
+     */
+    public function sendProviderVoucher($request, $reservation)
+    {
+        try {
+            /*
+            |--------------------------------------------------------------------------
+            | Validar la reservación
+            |--------------------------------------------------------------------------
+            */
+
+            if (!$reservation) {
+                return response()->json([
+                    'status' => 'error',
+                    'success' => false,
+                    'message' => 'No se encontró la reservación.',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            if ((int) $reservation->is_cancelled === 1) {
+                return response()->json([
+                    'status' => 'warning',
+                    'success' => false,
+                    'message' => 'No se puede enviar el cupón de una reservación cancelada.',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Obtener ventas y pagos
+            |--------------------------------------------------------------------------
+            */
+
+            $totalSales = (float) Sale::where('reservation_id', $reservation->id)
+                ->whereNull('deleted_at')
+                ->sum('total');
+
+            $payments = Payment::where('reservation_id', $reservation->id)
+                ->whereNull('deleted_at')
+                ->whereIn('category', [
+                    'PAYOUT',
+                    'PAYOUT_CREDIT_PAID',
+                ])
+                ->get();
+
+            $totalPayments = 0;
+
+            foreach ($payments as $payment) {
+                $amount = (float) $payment->total;
+                $exchangeRate = (float) ($payment->exchange_rate ?: 1);
+
+                if ($payment->operation === 'multiplication') {
+                    $amount *= $exchangeRate;
+                } elseif (
+                    $payment->operation === 'division'
+                    && $exchangeRate > 0
+                ) {
+                    $amount /= $exchangeRate;
+                }
+
+                $totalPayments += $amount;
+            }
+
+            $totalSales = round($totalSales, 2);
+            $totalPayments = round($totalPayments, 2);
+
+            $payNowAmount = $reservation->pay_now_amount !== null
+                ? round((float) $reservation->pay_now_amount, 2)
+                : $totalSales;
+
+            $onlinePending = round(
+                max(0, $payNowAmount - $totalPayments),
+                2
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | El saldo del proveedor es el saldo real pendiente
+            |--------------------------------------------------------------------------
+            |
+            | Si el cliente pagó exactamente el Pay Now:
+            | saldo proveedor = total reserva - Pay Now.
+            |
+            | Si el cliente pagó una cantidad adicional:
+            | el proveedor solo cobra el saldo real restante.
+            |
+            */
+
+            $providerBalance = round(
+                max(0, $totalSales - $totalPayments),
+                2
+            );
+
+            if ($onlinePending > 0) {
+                return response()->json([
+                    'status' => 'warning',
+                    'success' => false,
+                    'message' => 'El cliente todavía tiene un pago pendiente en línea de '
+                        . number_format($onlinePending, 2)
+                        . ' '
+                        . $reservation->currency
+                        . '.',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            if ($providerBalance <= 0) {
+                return response()->json([
+                    'status' => 'warning',
+                    'success' => false,
+                    'message' => 'Esta reservación no tiene saldo pendiente para cobrar al llegar.',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Obtener servicios
+            |--------------------------------------------------------------------------
+            */
+
+            $items = DB::table('reservations_items as item')
+                ->leftJoin(
+                    'destination_services as service',
+                    'service.id',
+                    '=',
+                    'item.destination_service_id'
+                )
+                ->leftJoin(
+                    'zones as zone_from',
+                    'zone_from.id',
+                    '=',
+                    'item.from_zone'
+                )
+                ->leftJoin(
+                    'zones as zone_to',
+                    'zone_to.id',
+                    '=',
+                    'item.to_zone'
+                )
+                ->select([
+                    'item.id',
+                    'item.code',
+                    'item.is_round_trip',
+                    'item.passengers',
+                    'item.flight_number',
+                    'item.from_name',
+                    'item.to_name',
+                    'item.op_one_pickup',
+                    'item.op_two_pickup',
+                    'service.name as vehicle_name',
+                    'zone_from.name as zone_from_name',
+                    'zone_to.name as zone_to_name',
+                ])
+                ->where('item.reservation_id', $reservation->id)
+                ->orderBy('item.id')
+                ->get();
+
+            if ($items->isEmpty()) {
+                return response()->json([
+                    'status' => 'warning',
+                    'success' => false,
+                    'message' => 'La reservación no contiene servicios.',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Preparar la plantilla
+            |--------------------------------------------------------------------------
+            */
+
+            $voucherData = [
+                'reservation' => $reservation,
+                'items' => $items,
+                'total_sales' => $totalSales,
+                'total_payments' => $totalPayments,
+                'pay_now_amount' => $payNowAmount,
+                'provider_balance' => $providerBalance,
+                'currency' => $reservation->currency,
+            ];
+
+            $message = view(
+                'reservations.provider-voucher',
+                $voucherData
+            )->render();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Destinatarios
+            |--------------------------------------------------------------------------
+            |
+            | contacto@taxidominicana.com se reemplazará después por el correo
+            | definitivo del proveedor.
+            |
+            */
+
+            $emailData = [
+                'Messages' => [
+                    [
+                        'From' => [
+                            'Email' => 'bookings@taxidominicana.com',
+                            'Name' => 'Taxi Dominicana Bookings',
+                        ],
+                        'To' => [
+                            [
+                                'Email' => 'bookings@taxidominicana.com',
+                                'Name' => 'Taxi Dominicana Bookings',
+                            ],
+                            [
+                                'Email' => 'contacto@taxidominicana.com',
+                                'Name' => 'Proveedor de transporte',
+                            ],
+                        ],
+                        'Subject' => 'Cupón de proveedor - Reservación #'
+                            . $reservation->id,
+                        'TextPart' => 'Cupón operativo de la reservación #'
+                            . $reservation->id
+                            . '. Saldo a cobrar: '
+                            . number_format($providerBalance, 2)
+                            . ' '
+                            . $reservation->currency,
+                        'HTMLPart' => $message,
+                    ],
+                ],
+            ];
+
+            $emailResponse = $this->sendMailjet($emailData);
+
+            if (
+                !isset($emailResponse['Messages'][0]['Status'])
+                || $emailResponse['Messages'][0]['Status'] !== 'success'
+            ) {
+                throw new Exception(
+                    'La plataforma de correo no pudo enviar el cupón.'
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Registrar actividad
+            |--------------------------------------------------------------------------
+            */
+
+            $this->create_followUps(
+                $reservation->id,
+                'El usuario: '
+                    . auth()->user()->name
+                    . ', envió el cupón operativo al proveedor. '
+                    . 'Saldo a cobrar: '
+                    . number_format($providerBalance, 2)
+                    . ' '
+                    . $reservation->currency,
+                'INTERN',
+                'SISTEMA'
+            );
+
+            return response()->json([
+                'status' => 'success',
+                'success' => true,
+                'message' => 'Cupón enviado correctamente al proveedor y a bookings.',
+            ], Response::HTTP_OK);
+
+        } catch (Exception $e) {
+            try {
+                $this->createLog([
+                    'type' => 'error',
+                    'category' => 'provider_voucher',
+                    'message' => 'Error al enviar cupón de proveedor.',
+                    'exception' => $e,
+                ]);
+            } catch (Exception $logException) {
+                // Evita que un error del logger oculte el error principal.
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'success' => false,
+                'message' => 'No fue posible enviar el cupón: '
+                    . $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private function orderByDateTime($a, $b) {
         return strtotime($b->created_at) - strtotime($a->created_at);
     }
