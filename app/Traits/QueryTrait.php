@@ -194,6 +194,7 @@ trait QueryTrait
                                     rez.is_commissionable,                                    
                                     rez.site_id,
                                     rez.pay_at_arrival,
+                                    rez.pay_now_amount,
                                     rez.reference,
                                     rez.affiliate_id,
                                     rez.terminal,
@@ -271,6 +272,19 @@ trait QueryTrait
 
                                     COALESCE(SUM(s.total_sales), 0) - COALESCE(SUM(p.total_payments), 0) AS total_balance,
 
+                                    -- Nuevo esquema de pago parcial
+                                    COALESCE(rez.pay_now_amount, COALESCE(SUM(s.total_sales), 0)) AS pay_now_amount,
+                                    GREATEST(
+                                        COALESCE(SUM(s.total_sales), 0)
+                                        - COALESCE(rez.pay_now_amount, COALESCE(SUM(s.total_sales), 0)),
+                                        0
+                                    ) AS pay_at_arrival_amount,
+                                    GREATEST(
+                                        COALESCE(rez.pay_now_amount, COALESCE(SUM(s.total_sales), 0))
+                                        - COALESCE(SUM(p.total_payments), 0),
+                                        0
+                                    ) AS online_balance,
+
                                     -- Información de reembolsos
                                     CASE WHEN rr.reservation_id IS NOT NULL THEN 1 ELSE 0 END as has_refund_request,
                                     COALESCE(rr.refund_count, 0) as refund_request_count,
@@ -280,20 +294,36 @@ trait QueryTrait
                                         ELSE 'REFUND_COMPLETED'
                                     END as refund_status,
                                     CASE
-                                        WHEN rez.is_cancelled = 1   AND rez.was_is_quotation = 1  THEN 'EXPIRED_QUOTATION'
-                                        WHEN rez.is_cancelled = 1   THEN 'CANCELLED'
-                                        WHEN rez.is_duplicated = 1  THEN 'DUPLICATED'
-                                        WHEN rez.open_credit = 1    THEN 'OPENCREDIT'
-                                        WHEN rez.is_quotation = 1   THEN 'QUOTATION'
-                                        WHEN site.is_cxc = 1 AND ( COALESCE(SUM(p.total_payments), 0) = 0 OR ( COALESCE(SUM(p.total_payments), 0) < COALESCE(SUM(s.total_sales), 0) ) ) THEN 'CREDIT'
-                                        WHEN rez.pay_at_arrival = 1 AND COALESCE(SUM(p.total_payments), 0) = 0 THEN 'PAY_AT_ARRIVAL'
-                                        WHEN COALESCE(SUM(s.total_sales), 0) - COALESCE(SUM(p.total_payments), 0) > 0 THEN 'PENDING'
-                                        WHEN COALESCE(SUM(s.total_sales), 0) - COALESCE(SUM(p.total_payments), 0) <= 0 THEN 'CONFIRMED'
-                                        ELSE 'UNKNOWN'
+                                        WHEN rez.is_cancelled = 1 AND rez.was_is_quotation = 1 THEN 'EXPIRED_QUOTATION'
+                                        WHEN rez.is_cancelled = 1 THEN 'CANCELLED'
+                                        WHEN rez.is_duplicated = 1 THEN 'DUPLICATED'
+                                        WHEN rez.open_credit = 1 THEN 'OPENCREDIT'
+                                        WHEN rez.is_quotation = 1 THEN 'QUOTATION'
+                                        WHEN site.is_cxc = 1
+                                             AND (
+                                                 COALESCE(SUM(p.total_payments), 0) = 0
+                                                 OR COALESCE(SUM(p.total_payments), 0) < COALESCE(SUM(s.total_sales), 0)
+                                             )
+                                            THEN 'CREDIT'
+                                        WHEN rez.pay_at_arrival = 1
+                                             AND COALESCE(SUM(p.total_payments), 0) = 0
+                                            THEN 'PAY_AT_ARRIVAL'
+                                        WHEN (
+                                            COALESCE(rez.pay_now_amount, COALESCE(SUM(s.total_sales), 0))
+                                            - COALESCE(SUM(p.total_payments), 0)
+                                        ) > 0
+                                            THEN 'PENDING'
+                                        ELSE 'CONFIRMED'
                                     END AS reservation_status,
                                     CASE
-                                        WHEN site.is_cxc = 1 AND COALESCE(SUM(p.total_payments), 0) = 0 THEN 'CREDIT'
-                                        WHEN COALESCE(SUM(s.total_sales), 0) - COALESCE(SUM(p.total_payments), 0) <= 0 THEN 'PAID'
+                                        WHEN site.is_cxc = 1
+                                             AND COALESCE(SUM(p.total_payments), 0) = 0
+                                            THEN 'CREDIT'
+                                        WHEN (
+                                            COALESCE(rez.pay_now_amount, COALESCE(SUM(s.total_sales), 0))
+                                            - COALESCE(SUM(p.total_payments), 0)
+                                        ) <= 0
+                                            THEN 'PAID'
                                         ELSE 'PENDING'
                                     END AS payment_status,
                                     GROUP_CONCAT(
@@ -515,6 +545,7 @@ trait QueryTrait
                                         rez.is_commissionable,
                                         rez.site_id,
                                         rez.pay_at_arrival,
+                                        rez.pay_now_amount,
                                         rez.reference,
                                         rez.affiliate_id,
                                         rez.terminal,
