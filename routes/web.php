@@ -74,6 +74,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DualDatabaseController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -387,6 +388,7 @@ Route::group(['middleware' => ['auth', 'Debug']], function () {
         Route::post('/reservations/confirmation/departure',                             [DETAILS_RESERVATION::class, 'departureConfirmation'])->name('reservations.confirmationDeparture');
         
         Route::post('/reservations/payment-request',                                    [DETAILS_RESERVATION::class, 'paymentRequest'])->name('reservations.paymentRequest');
+        Route::post('/reservations/{reservation}/send-provider-voucher',                 [DETAILS_RESERVATION::class, 'sendProviderVoucher'])->name('reservations.sendProviderVoucher');
         Route::post('/reservations/upload',                                             [DETAILS_RESERVATION::class, 'uploadMedia'])->name('reservations.upload');
         Route::post('/reservations/upload/reorder',                                     [DETAILS_RESERVATION::class, 'reorderMedia'])->name('reservations.upload.reorder');
         Route::get('/reservations/upload/{id}',                                         [DETAILS_RESERVATION::class, 'getMedia'])->name('reservations.upload.getmedia');
